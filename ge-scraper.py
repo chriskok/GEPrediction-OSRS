@@ -2,7 +2,11 @@ import requests
 import json
 import csv
 
-itemList = [1521, 1519, 1517, 1515]
+csvName = 'Rune_Data'
+
+# get more item codes here: https://everythingrs.com/tools/osrs/itemlist/238
+# itemList = [1521, 1519, 1517, 1515]  # Logs
+itemList = list(range(554,567,1))  # Runes
 
 fullDict = {}
 labels = ['timestamp']
@@ -26,7 +30,7 @@ for itemID in itemList:
 
 
 # Write to CSV file
-with open('GE_data.csv', mode='w', newline='') as GE_data:
+with open('data/{}.csv'.format(csvName), mode='w', newline='') as GE_data:
     GE_writer = csv.writer(GE_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     GE_writer.writerow(labels)  # write field names
 
