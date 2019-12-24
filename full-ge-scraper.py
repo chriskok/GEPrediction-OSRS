@@ -17,7 +17,7 @@ overall_quantity = []
 labels = ['timestamp']
 
 def writeToCSV(filename, data, timestamp):
-    with open('data/{}.csv'.format(filename), mode='w', newline='') as GE_data:
+    with open('data/rsbuddy/{}.csv'.format(filename), mode='w', newline='') as GE_data:
         GE_writer = csv.writer(GE_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         GE_writer.writerow(labels)  # write field names
 
@@ -27,7 +27,7 @@ def writeToCSV(filename, data, timestamp):
 
 
 def appendToCSV(filename, data, timestamp):
-    with open('data/{}.csv'.format(filename), mode='a', newline='') as GE_data:
+    with open('data/rsbuddy/{}.csv'.format(filename), mode='a', newline='') as GE_data:
         GE_writer = csv.writer(GE_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         new_array = [timestamp]
@@ -82,7 +82,7 @@ def append_data():
 
 def main():
 
-    if os.path.isfile('data/buy_average.csv'):
+    if os.path.isfile('data/rsbuddy/buy_average.csv'):
         append_data()
     else:
         initialize_data()
