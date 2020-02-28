@@ -40,11 +40,8 @@ def RSI(group, n=14):
 def prepare_data(item_to_predict, items_selected):
     buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv")
     buy_average = buy_average.set_index('timestamp')
-
     buy_average = buy_average.drop_duplicates()
-
     df = buy_average[items_selected].replace(to_replace=0, method='ffill')
-    print(df.shape)
 
     ## Known finance features (MACD, RSI)
     macd = moving_average_convergence(df[item_to_predict])
@@ -86,11 +83,12 @@ def prepare_data(item_to_predict, items_selected):
     ## Appending features to main dataframe
     df = pd.concat([df,finance_features, sell_average, buy_quantity, sell_quantity, slope], axis=1)
     df = df.dropna()
-    print(df.shape)
+
+    return df
 
 # FEATURE SELECTION FUNCTIONS
 
-def regression_f_test(input_df, item_to_predict):
+def regression_f_test(input_df, item_to_predict, print_scores=False):
     features = input_df.drop(['datetime'], axis=1).copy()
 
     # normalize dataset
@@ -98,25 +96,23 @@ def regression_f_test(input_df, item_to_predict):
         
     X = dataset.drop([item_to_predict], axis=1)
     y = dataset[item_to_predict]
-    print(X.shape)
-    print(y.shape)
 
     # define feature selection
     fs = SelectKBest(score_func=f_regression, k=7)
     # apply feature selection
     X_selected = fs.fit_transform(X, y)
-    print(X_selected.shape)
 
     # Get scores for each of the columns
     scores = fs.scores_
-    for idx, col in enumerate(X.columns): 
-        print("feature: {: >20} \t score: {: >10}".format(col, round(scores[idx],5)))
+    if print_scores:
+        for idx, col in enumerate(X.columns): 
+            print("feature: {: >20} \t score: {: >10}".format(col, round(scores[idx],5)))
 
     # Get columns to keep and create new dataframe with those only
     cols = fs.get_support(indices=True)
     features_df_new = X.iloc[:,cols]
-    print(features_df_new.columns)
-    features_df_new.head()
+    
+    return features_df_new
 
 def recursive_feature_elim(dataset, item_to_predict):
     X = dataset.drop([item_to_predict], axis=1)
@@ -137,6 +133,9 @@ def main():
 
     item_to_predict = 'Rune_scimitar'
     items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
+
+    preprocessed_df = prepare_data(item_to_predict, items_selected)
+    print(preprocessed_df.head())
 
 
 
