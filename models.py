@@ -104,17 +104,19 @@ def univariate_rnn(df, item_to_predict, past_history=30, batch_size=32, buffer_s
 
 	#### Unnormalizing the data (so we can see actual prices in GP)
 	def unnormalized(val):
+		nonlocal uni_train_std, uni_train_mean
 		return (val*uni_train_std) + uni_train_mean
 
 	for x, y in val_univariate.take(2):
+		print((x[0].numpy()*uni_train_std) + uni_train_mean)
 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
-						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model')
+						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - modified')
 		plot.show()
 
   
 def main():
-	item_to_predict = 'Rune_scimitar'
-	items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
+	item_to_predict = 'Chaos_rune'
+	items_selected = ['Chaos_rune', 'Death_rune', 'Nature_rune', 'Cosmic_rune', 'Law_rune']
 
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
@@ -122,8 +124,8 @@ def main():
 	print(selected_df.head())
 
 	# rfe_df = recursive_feature_elim(preprocessed_df, item_to_predict)
-	
-	# univariate_rnn(selected_df, item_to_predict)
+
+	univariate_rnn(selected_df, item_to_predict)
 
 if __name__ == "__main__":
 	main()
