@@ -45,7 +45,6 @@ def prepare_data(item_to_predict, items_selected):
 
     ## Known finance features (MACD, RSI)
     macd = moving_average_convergence(df[item_to_predict])
-    sma = moving_average(df[item_to_predict])
     rsi = RSI(df[item_to_predict], 10)
     finance_features = pd.concat([macd, rsi], axis=1)
 
@@ -114,7 +113,7 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
     
     return features_df_new
 
-def recursive_feature_elim(dataset, item_to_predict):
+def recursive_feature_elim(input_df, item_to_predict):
     features = input_df.drop(['datetime'], axis=1).copy()
 
     # normalize dataset
