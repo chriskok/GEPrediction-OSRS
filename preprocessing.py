@@ -1,27 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
-import tensorflow as tf
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 
-mpl.rcParams['figure.figsize'] = (8, 6)
-mpl.rcParams['axes.grid'] = False
+from sklearn import datasets
+from sklearn.feature_selection import RFE, f_regression, SelectKBest
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestRegressor
 
 # DATA_FOLDER = "data/osbuddy/excess/"
 DATA_FOLDER = "data/rsbuddy/"
-buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv")
-buy_average = buy_average.set_index('timestamp')
-
-buy_average = buy_average.drop_duplicates()
-
-item_to_predict = 'Rune_scimitar'
-items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
-df = buy_average[items_selected].replace(to_replace=0, method='ffill')
-print(df.shape)
-
-## Known finance features (MACD, RSI)
 
 def moving_average_convergence(group, nslow=26, nfast=12):
     emaslow = group.ewm(span=nslow, min_periods=1).mean()
@@ -49,48 +37,108 @@ def RSI(group, n=14):
     rsi=rsi.rename('RSI')
     return rsi
 
-macd = moving_average_convergence(df[item_to_predict])
-sma = moving_average(df[item_to_predict])
-rsi = RSI(df[item_to_predict], 10)
-finance_features = pd.concat([macd, rsi], axis=1)
+def prepare_data(item_to_predict, items_selected):
+    buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv")
+    buy_average = buy_average.set_index('timestamp')
 
-## Fetched API features (buy quantity, sell price average)
+    buy_average = buy_average.drop_duplicates()
 
-sell_average = pd.read_csv(DATA_FOLDER + "sell_average.csv")
-sell_average = sell_average.set_index('timestamp')
-sell_average = sell_average.drop_duplicates()
-sell_average = sell_average[items_selected].replace(to_replace=0, method='ffill')
-sell_average.columns = [str(col) + '_sa' for col in sell_average.columns]
+    df = buy_average[items_selected].replace(to_replace=0, method='ffill')
+    print(df.shape)
 
-buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv")
-buy_quantity = buy_quantity.set_index('timestamp')
-buy_quantity = buy_quantity.drop_duplicates()
-buy_quantity = buy_quantity[items_selected].replace(to_replace=0, method='ffill')
-buy_quantity.columns = [str(col) + '_bq' for col in buy_quantity.columns]
+    ## Known finance features (MACD, RSI)
+    macd = moving_average_convergence(df[item_to_predict])
+    sma = moving_average(df[item_to_predict])
+    rsi = RSI(df[item_to_predict], 10)
+    finance_features = pd.concat([macd, rsi], axis=1)
 
-sell_quantity = pd.read_csv(DATA_FOLDER + "sell_quantity.csv")
-sell_quantity = sell_quantity.set_index('timestamp')
-sell_quantity = sell_quantity.drop_duplicates()
-sell_quantity = sell_quantity[items_selected].replace(to_replace=0, method='ffill')
-sell_quantity.columns = [str(col) + '_sq' for col in sell_quantity.columns]
+    ## Fetched API features (buy quantity, sell price average)
+    sell_average = pd.read_csv(DATA_FOLDER + "sell_average.csv")
+    sell_average = sell_average.set_index('timestamp')
+    sell_average = sell_average.drop_duplicates()
+    sell_average = sell_average[items_selected].replace(to_replace=0, method='ffill')
+    sell_average.columns = [str(col) + '_sa' for col in sell_average.columns]
 
-## Datetime properties
+    buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv")
+    buy_quantity = buy_quantity.set_index('timestamp')
+    buy_quantity = buy_quantity.drop_duplicates()
+    buy_quantity = buy_quantity[items_selected].replace(to_replace=0, method='ffill')
+    buy_quantity.columns = [str(col) + '_bq' for col in buy_quantity.columns]
 
-df['datetime'] = df.index
-df['datetime'] = pd.to_datetime(df['datetime'], unit='s')
-df['dayofweek'] = df['datetime'].dt.dayofweek
-df['hour'] = df['datetime'].dt.hour
+    sell_quantity = pd.read_csv(DATA_FOLDER + "sell_quantity.csv")
+    sell_quantity = sell_quantity.set_index('timestamp')
+    sell_quantity = sell_quantity.drop_duplicates()
+    sell_quantity = sell_quantity[items_selected].replace(to_replace=0, method='ffill')
+    sell_quantity.columns = [str(col) + '_sq' for col in sell_quantity.columns]
 
-## Differentiated signal
+    ## Datetime properties
+    df['datetime'] = df.index
+    df['datetime'] = pd.to_datetime(df['datetime'], unit='s')
+    df['dayofweek'] = df['datetime'].dt.dayofweek
+    df['hour'] = df['datetime'].dt.hour
 
-tmp = df.copy()
-tmp.index = pd.to_datetime(tmp.index)
+    ## Differentiated signal
+    tmp = df.copy()
+    tmp.index = pd.to_datetime(tmp.index)
+    slope = pd.Series(np.gradient(tmp[item_to_predict]), df.index, name='slope')
+    tmp = pd.concat([tmp, slope], axis=1)
 
-slope = pd.Series(np.gradient(tmp[item_to_predict]), df.index, name='slope')
-tmp = pd.concat([tmp, slope], axis=1)
+    ## Appending features to main dataframe
+    df = pd.concat([df,finance_features, sell_average, buy_quantity, sell_quantity, slope], axis=1)
+    df = df.dropna()
+    print(df.shape)
 
-## Appending features to main dataframe
+# FEATURE SELECTION FUNCTIONS
 
-df = pd.concat([df,finance_features, sell_average, buy_quantity, sell_quantity, slope], axis=1)
-df = df.dropna()
-print(df.shape)
+def regression_f_test(input_df, item_to_predict):
+    features = input_df.drop(['datetime'], axis=1).copy()
+
+    # normalize dataset
+    dataset=(features-features.mean())/features.std()
+        
+    X = dataset.drop([item_to_predict], axis=1)
+    y = dataset[item_to_predict]
+    print(X.shape)
+    print(y.shape)
+
+    # define feature selection
+    fs = SelectKBest(score_func=f_regression, k=7)
+    # apply feature selection
+    X_selected = fs.fit_transform(X, y)
+    print(X_selected.shape)
+
+    # Get scores for each of the columns
+    scores = fs.scores_
+    for idx, col in enumerate(X.columns): 
+        print("feature: {: >20} \t score: {: >10}".format(col, round(scores[idx],5)))
+
+    # Get columns to keep and create new dataframe with those only
+    cols = fs.get_support(indices=True)
+    features_df_new = X.iloc[:,cols]
+    print(features_df_new.columns)
+    features_df_new.head()
+
+def recursive_feature_elim(dataset, item_to_predict):
+    X = dataset.drop([item_to_predict], axis=1)
+    y = dataset[item_to_predict]
+
+    # perform feature selection
+    rfe = RFE(RandomForestRegressor(n_estimators=500, random_state=1), 7)
+    fit = rfe.fit(X, y)
+    # report selected features
+    print('Selected Features:')
+    names = dataset.drop([item_to_predict], axis=1).columns.values
+    for i in range(len(fit.support_)):
+        if fit.support_[i]:
+            print(names[i])
+
+def main():
+    print('Preprocessing...')
+
+    item_to_predict = 'Rune_scimitar'
+    items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
+
+
+
+if __name__ == "__main__":
+    main()
