@@ -115,6 +115,11 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
     return features_df_new
 
 def recursive_feature_elim(dataset, item_to_predict):
+    features = input_df.drop(['datetime'], axis=1).copy()
+
+    # normalize dataset
+    dataset=(features-features.mean())/features.std()
+
     X = dataset.drop([item_to_predict], axis=1)
     y = dataset[item_to_predict]
 
@@ -124,20 +129,19 @@ def recursive_feature_elim(dataset, item_to_predict):
     # report selected features
     print('Selected Features:')
     names = dataset.drop([item_to_predict], axis=1).columns.values
+    selected_features = []
     for i in range(len(fit.support_)):
         if fit.support_[i]:
-            print(names[i])
+            selected_features.append(names[i])
+
+    return X[selected_features]
 
 def main():
-    print('Preprocessing...')
-
     item_to_predict = 'Rune_scimitar'
     items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
 
     preprocessed_df = prepare_data(item_to_predict, items_selected)
     print(preprocessed_df.head())
-
-
 
 if __name__ == "__main__":
     main()
