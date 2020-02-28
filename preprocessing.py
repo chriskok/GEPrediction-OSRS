@@ -99,7 +99,7 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
     # define feature selection
     fs = SelectKBest(score_func=f_regression, k=7)
     # apply feature selection
-    X_selected = fs.fit_transform(X, y)
+    fs.fit_transform(X, y)
 
     # Get scores for each of the columns
     scores = fs.scores_
@@ -111,7 +111,7 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
     cols = fs.get_support(indices=True)
     features_df_new = X.iloc[:,cols]
     
-    return features_df_new
+    return pd.concat([features_df_new, y], axis=1)
 
 def recursive_feature_elim(input_df, item_to_predict):
     features = input_df.drop(['datetime'], axis=1).copy()
@@ -133,7 +133,7 @@ def recursive_feature_elim(input_df, item_to_predict):
         if fit.support_[i]:
             selected_features.append(names[i])
 
-    return X[selected_features]
+    return pd.concat([X[selected_features], y], axis=1)
 
 def main():
     item_to_predict = 'Rune_scimitar'
