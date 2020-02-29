@@ -272,7 +272,7 @@ def multivariate_rnn_multi(df, item_to_predict, future_target = 5, past_history=
 											validation_data=val_data_multi,
 											validation_steps=50)
 
-	plot_train_history(multi_step_history, 'Multi-Step Training and validation loss')
+	# plot_train_history(multi_step_history, 'Multi-Step Training and validation loss')
 
 	# save model to models folder and features to models/features
 	multi_step_model.save('models/{}_multiM_model.h5'.format(item_to_predict))
@@ -299,9 +299,7 @@ def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, ite
 	# 	return (val * data_std[item_to_predict_index]) + data_mean[item_to_predict_index]
 	
 	for x, y in val_data_multi.take(3):
-		print(x[0].numpy)
-		print(y[0].numpy)
-		multi_step_plot(unnormalized(x[0].numpy), unnormalized(y[0].numpy), unnormalized(model.predict(x)[0].numpy), item_to_predict_index)
+		multi_step_plot(unnormalized(x[0].numpy()), unnormalized(y[0].numpy()), unnormalized(model.predict(x)[0]), item_to_predict_index)
 
 def main():
 	# SELECT ITEMS
@@ -337,7 +335,7 @@ def main():
 
 	# =========== MULTIVARIATE MULTI STEP ===========
 	# TRAINING AND SAVING MODEL
-	multivariate_rnn_multi(selected_df, item_to_predict)
+	# multivariate_rnn_multi(selected_df, item_to_predict)
 
 	# LOADING AND APPLYING MODEL
 	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
