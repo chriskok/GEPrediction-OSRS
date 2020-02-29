@@ -2,6 +2,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import numpy as np
 import os
 import pandas as pd
+import requests
+import json
 
 from sklearn import datasets
 from sklearn.feature_selection import RFE, f_regression, SelectKBest
@@ -10,6 +12,44 @@ from sklearn.ensemble import RandomForestRegressor
 
 # DATA_FOLDER = "data/osbuddy/excess/"
 DATA_FOLDER = "data/rsbuddy/"
+rsAPI = "https://storage.googleapis.com/osb-exchange/summary.json"
+
+def save_member_items():
+	r = requests.get(rsAPI)
+	json_data = json.loads(r.text)
+	non_member_list = []
+	member_list = []
+	for item in json_data:
+		if (json_data[item]["members"] == False): 
+			non_member_list.append(json_data[item]["name"].replace(" ", "_"))
+		else: 
+			member_list.append(json_data[item]["name"].replace(" ", "_"))
+	
+	# open output file for writing
+	with open('data/non_member_list.txt', 'w') as filehandle:
+		json.dump(non_member_list, filehandle)
+	
+	# open output file for writing
+	with open('data/member_list.txt', 'w') as filehandle:
+		json.dump(member_list, filehandle)
+
+	# print("member items: {}, non-member items: {}".format(len(member_list), len(non_member_list)))
+	
+def item_selection():
+	buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv")
+	buy_quantity = buy_quantity.set_index('timestamp')
+	buy_quantity = buy_quantity.drop_duplicates()
+	df = buy_quantity.loc[:, (buy_quantity==0).mean() < .05]  # Drop columns with more than 5% 0s
+
+	# open output file for reading
+	with open('data/member_list.txt', 'r') as filehandle:
+		member_list = json.load(filehandle)
+	
+	for item_name in member_list:
+		if (item_name in df.columns.values):
+			df = df.drop(item_name, axis=1)  # Drop all member only items
+	print(df.shape)
+	print(df.columns.values)
 
 def moving_average_convergence(group, nslow=26, nfast=12):
 	emaslow = group.ewm(span=nslow, min_periods=1).mean()
@@ -145,15 +185,22 @@ def unnormalized(val, std, mean):
 	return (val*std) + mean
 
 def main():
-	item_to_predict = 'Rune_scimitar'
-	items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
+	# SAVE ITEM LISTS
+	# save_member_items()
 
-	preprocessed_df = prepare_data(item_to_predict, items_selected)
-	print(preprocessed_df.head())
+	# SELECT ITEMS
+	item_selection()
+	# item_to_predict = 'Rune_scimitar'
+	# items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
 
-	selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
-	print(selected_data.head())
-	print(selected_data.shape)
+	# ADD FEATURES
+	# preprocessed_df = prepare_data(item_to_predict, items_selected)
+	# print(preprocessed_df.head())
+
+	# FEATURE SELECTIOn
+	# selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
+	# print(selected_data.head())
+	# print(selected_data.shape)
 	# print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
 
 if __name__ == "__main__":

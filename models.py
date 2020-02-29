@@ -121,6 +121,7 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
 		plot.show()
 
+
 def main():
 	item_to_predict = 'Chaos_rune'
 	items_selected = ['Chaos_rune', 'Death_rune', 'Nature_rune', 'Cosmic_rune', 'Law_rune']
