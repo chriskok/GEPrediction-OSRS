@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
-from preprocessing import prepare_data, regression_f_test, recursive_feature_elim
+from preprocessing import prepare_data, regression_f_test, recursive_feature_elim, item_selection
 import tensorflow as tf
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -117,14 +117,17 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 		return (val*uni_train_std) + uni_train_mean
 
 	for x, y in val_univariate.take(2):
+		# print(unnormalized(x[0].numpy()))
 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
 						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
 		plot.show()
 
 
 def main():
+	# SELECT ITEMS
+	items_selected = item_selection()
+	# print(items_selected)
 	item_to_predict = 'Chaos_rune'
-	items_selected = ['Chaos_rune', 'Death_rune', 'Nature_rune', 'Cosmic_rune', 'Law_rune']
 
 	# FEATURE EXTRACTION
 	preprocessed_df = prepare_data(item_to_predict, items_selected)

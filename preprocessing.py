@@ -48,8 +48,9 @@ def item_selection():
 	for item_name in member_list:
 		if (item_name in df.columns.values):
 			df = df.drop(item_name, axis=1)  # Drop all member only items
-	print(df.shape)
-	print(df.columns.values)
+
+	# print(df.shape)
+	return df.columns.values
 
 def moving_average_convergence(group, nslow=26, nfast=12):
 	emaslow = group.ewm(span=nslow, min_periods=1).mean()
@@ -77,7 +78,7 @@ def RSI(group, n=14):
 	rsi=rsi.rename('RSI')
 	return rsi
 
-def prepare_data(item_to_predict, items_selected):
+def prepare_data(item_to_predict, items_selected, verbose=False):
 	buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv")
 	buy_average = buy_average.set_index('timestamp')
 	buy_average = buy_average.drop_duplicates()
@@ -119,9 +120,11 @@ def prepare_data(item_to_predict, items_selected):
 	slope = pd.Series(np.gradient(tmp[item_to_predict]), df.index, name='slope')
 	tmp = pd.concat([tmp, slope], axis=1)
 
+
 	## Appending features to main dataframe
 	df = pd.concat([df,finance_features, sell_average, buy_quantity, sell_quantity, slope], axis=1)
-	df = df.dropna()
+	if verbose: print("dropping: {}".format(df.columns[df.isna().any()].tolist()))
+	df = df.dropna(axis='columns')
 
 	return df
 
@@ -137,6 +140,8 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
 		
 	X = dataset.drop([item_to_predict], axis=1)
 	y = dataset[item_to_predict]
+
+	X = X.dropna(axis='columns')
 
 	# define feature selection
 	fs = SelectKBest(score_func=f_regression, k=7)
@@ -166,6 +171,8 @@ def recursive_feature_elim(input_df, item_to_predict):
 
 	X = dataset.drop([item_to_predict], axis=1)
 	y = dataset[item_to_predict]
+	
+	X = X.dropna(axis='columns')
 
 	# perform feature selection
 	rfe = RFE(RandomForestRegressor(n_estimators=500, random_state=1), 7)
@@ -189,19 +196,22 @@ def main():
 	# save_member_items()
 
 	# SELECT ITEMS
-	item_selection()
-	# item_to_predict = 'Rune_scimitar'
+	items_selected = item_selection()
+	# print(items_selected)
+	item_to_predict = 'Oak_logs'
 	# items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
 
 	# ADD FEATURES
-	# preprocessed_df = prepare_data(item_to_predict, items_selected)
-	# print(preprocessed_df.head())
+	preprocessed_df = prepare_data(item_to_predict, items_selected, verbose=True)
+	print(preprocessed_df.head())
+	print(preprocessed_df.shape)
 
-	# FEATURE SELECTIOn
-	# selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
-	# print(selected_data.head())
-	# print(selected_data.shape)
-	# print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
+	# FEATURE SELECTION
+	# selected_data, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
+	selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
+	print(selected_data.head())
+	print(selected_data.shape)
+	print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
 
 if __name__ == "__main__":
 	main()
