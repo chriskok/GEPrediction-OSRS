@@ -13,6 +13,7 @@ mpl.rcParams['axes.grid'] = False
 
 TRAIN_SPLIT = 750
 tf.random.set_seed(13)
+STEP = 1
 
 def univariate_data(dataset, start_index, end_index, history_size, target_size):
 	data = []
@@ -200,7 +201,6 @@ def multivariate_rnn_single(df, item_to_predict, past_history=30, BATCH_SIZE=32,
 def apply_multivariate_single_step_test(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
 	dataset = df.values
 	future_target = 1
-	STEP = 1
 	item_to_predict_index = df.columns.get_loc(item_to_predict)
 
 	x_val_single, y_val_single = multivariate_data(dataset, dataset[:, item_to_predict_index],
@@ -219,6 +219,90 @@ def apply_multivariate_single_step_test(df, item_to_predict, model, item_std, it
 							unnormalized(model.predict(x)[0])], 1, 'Single Step Prediction - unnormalized')
 		plot.show()
 
+def multi_step_plot(history, true_future, prediction, item_to_predict_index, save_imgs=False, img_title="plot", index=0):
+	fig = plt.figure(figsize=(12, 6))
+	num_in = create_time_steps(len(history))
+	num_out = len(true_future)
+
+	plt.plot(num_in, np.array(history[:, item_to_predict_index]), label='History')
+	plt.plot(np.arange(num_out)/STEP, np.array(true_future), 'bo',
+			label='True Future')
+	if prediction.any():
+		plt.plot(np.arange(num_out)/STEP, np.array(prediction), 'ro',
+				label='Predicted Future')
+	plt.legend(loc='upper left')
+	plt.title(img_title)
+	if (save_imgs): fig.savefig('imgs/{}.png'.format(index))
+	plt.show()
+
+def multivariate_rnn_multi(df, item_to_predict, future_target = 5, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+	dataset = df.values
+	item_to_predict_index = df.columns.get_loc(item_to_predict)
+
+	x_train_multi, y_train_multi = multivariate_data(dataset, dataset[:, item_to_predict_index], 0,
+													TRAIN_SPLIT, past_history,
+													future_target, STEP)
+	x_val_multi, y_val_multi = multivariate_data(dataset, dataset[:, item_to_predict_index],
+												TRAIN_SPLIT, None, past_history,
+												future_target, STEP)
+
+	train_data_multi = tf.data.Dataset.from_tensor_slices((x_train_multi, y_train_multi))
+	train_data_multi = train_data_multi.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
+
+	val_data_multi = tf.data.Dataset.from_tensor_slices((x_val_multi, y_val_multi))
+	val_data_multi = val_data_multi.batch(BATCH_SIZE).repeat()
+
+	multi_step_model = tf.keras.models.Sequential()
+	multi_step_model.add(tf.keras.layers.LSTM(64,
+											return_sequences=True,
+											input_shape=x_train_multi.shape[-2:]))
+	# multi_step_model.add(tf.keras.layers.LSTM(32, return_sequences=True))
+	multi_step_model.add(tf.keras.layers.LSTM(32, activation='relu'))
+	multi_step_model.add(tf.keras.layers.Dense(future_target)) 
+	multi_step_model.add(tf.keras.layers.Dropout(0.5))
+	multi_step_model.add(tf.keras.layers.Dense(future_target))
+
+	# , kernel_regularizer=tf.keras.regularizers.l2(0.04)
+	# multi_step_model.add(tf.keras.layers.BatchNormalization())
+
+	multi_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(clipvalue=1.0), loss='mae')
+
+	multi_step_history = multi_step_model.fit(train_data_multi, epochs=EPOCHS,
+											steps_per_epoch=EVALUATION_INTERVAL,
+											validation_data=val_data_multi,
+											validation_steps=50)
+
+	plot_train_history(multi_step_history, 'Multi-Step Training and validation loss')
+
+	# save model to models folder and features to models/features
+	multi_step_model.save('models/{}_multiM_model.h5'.format(item_to_predict))
+
+	with open('models/features/{}_multiM_features.txt'.format(item_to_predict), 'w') as filehandle:
+		json.dump(df.columns.values.tolist(), filehandle)
+
+def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30, BATCH_SIZE=32):
+	dataset = df.values
+	item_to_predict_index = df.columns.get_loc(item_to_predict)
+
+	x_val_multi, y_val_multi = multivariate_data(dataset, dataset[:, item_to_predict_index],
+												TRAIN_SPLIT, None, past_history,
+												future_target, STEP)
+
+	val_data_multi = tf.data.Dataset.from_tensor_slices((x_val_multi, y_val_multi))
+	val_data_multi = val_data_multi.batch(BATCH_SIZE).repeat()
+
+	#### Unnormalizing the data (so we can see actual prices in GP)
+	def unnormalized(val):
+		return (val*item_std) + item_mean
+	
+	# def revert_target(val):
+	# 	return (val * data_std[item_to_predict_index]) + data_mean[item_to_predict_index]
+	
+	for x, y in val_data_multi.take(3):
+		print(x[0].numpy)
+		print(y[0].numpy)
+		multi_step_plot(unnormalized(x[0].numpy), unnormalized(y[0].numpy), unnormalized(model.predict(x)[0].numpy), item_to_predict_index)
+
 def main():
 	# SELECT ITEMS
 	items_selected = item_selection()
@@ -229,7 +313,7 @@ def main():
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
 	# FEATURE SELECTION & NORMALIZATION
-	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
+	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=2)
 	# selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
 	print(selected_df.head())
 	# print(selected_df.shape)
@@ -243,13 +327,21 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
 	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# =========== MULTIVARIATE SINGLE STEP ===========
+	# # =========== MULTIVARIATE SINGLE STEP ===========
+	# # TRAINING AND SAVING MODEL
+	# multivariate_rnn_single(selected_df, item_to_predict)
+
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
+	# apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+
+	# =========== MULTIVARIATE MULTI STEP ===========
 	# TRAINING AND SAVING MODEL
-	multivariate_rnn_single(selected_df, item_to_predict)
+	multivariate_rnn_multi(selected_df, item_to_predict)
 
 	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
-	apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+	apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 if __name__ == "__main__":
 	main()

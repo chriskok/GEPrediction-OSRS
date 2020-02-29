@@ -130,7 +130,7 @@ def prepare_data(item_to_predict, items_selected, verbose=False):
 
 # FEATURE SELECTION FUNCTIONS
 
-def regression_f_test(input_df, item_to_predict, print_scores=False, specific_features=None):
+def regression_f_test(input_df, item_to_predict, number_of_features=7, print_scores=False, specific_features=None):
 	features = input_df.drop(['datetime'], axis=1).copy()
 
 	if specific_features is not None: 
@@ -149,7 +149,7 @@ def regression_f_test(input_df, item_to_predict, print_scores=False, specific_fe
 	X = X.dropna(axis='columns')
 
 	# define feature selection
-	fs = SelectKBest(score_func=f_regression, k=7)
+	fs = SelectKBest(score_func=f_regression, k=number_of_features)
 	# apply feature selection
 	fs.fit_transform(X, y)
 
@@ -166,7 +166,7 @@ def regression_f_test(input_df, item_to_predict, print_scores=False, specific_fe
 	# print('std: {}, mean: {}'.format(features_std[item_to_predict], features_mean[item_to_predict]))
 	return pd.concat([features_df_new, y], axis=1), features_std[item_to_predict], features_mean[item_to_predict]
 
-def recursive_feature_elim(input_df, item_to_predict):
+def recursive_feature_elim(input_df, item_to_predict, number_of_features=7):
 	features = input_df.drop(['datetime'], axis=1).copy()
 
 	# normalize dataset
@@ -180,7 +180,7 @@ def recursive_feature_elim(input_df, item_to_predict):
 	X = X.dropna(axis='columns')
 
 	# perform feature selection
-	rfe = RFE(RandomForestRegressor(n_estimators=500, random_state=1), 7)
+	rfe = RFE(RandomForestRegressor(n_estimators=500, random_state=1), number_of_features)
 	fit = rfe.fit(X, y)
 	# report selected features
 	print('Selected Features:')
