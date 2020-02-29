@@ -92,7 +92,7 @@ def show_plot(plot_data, delta, title):
 	plt.xlabel('Time-Step')
 	return plt
 
-def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
+def apply_univariate_test(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
 
 	uni_data = df[item_to_predict]
 	uni_data = uni_data.values
@@ -115,6 +115,97 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
 		plot.show()
 
+# MULTIVARIATE PREDICTION FUNCTIONS
+def multivariate_data(dataset, target, start_index, end_index, history_size,
+					  target_size, step, single_step=False):
+	data = []
+	labels = []
+
+	start_index = start_index + history_size
+	if end_index is None:
+		end_index = len(dataset) - target_size
+
+	for i in range(start_index, end_index):
+		indices = range(i-history_size, i, step)
+		data.append(dataset[indices])
+
+		if single_step:
+			labels.append(target[i+target_size])
+		else:
+			labels.append(target[i:i+target_size])
+
+	return np.array(data), np.array(labels)
+
+def plot_train_history(history, title):
+	loss = history.history['loss']
+	val_loss = history.history['val_loss']
+
+	epochs = range(len(loss))
+
+	plt.figure()
+
+	plt.plot(epochs, loss, 'b', label='Training loss')
+	plt.plot(epochs, val_loss, 'r', label='Validation loss')
+	plt.title(title)
+	plt.legend()
+
+	plt.show()
+
+def multivariate_rnn_single(df, item_to_predict, past_history=100, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+	dataset = df
+
+	# # Normalize
+	# dataset = features.values
+	# data_mean = dataset[:TRAIN_SPLIT].mean(axis=0)
+	# data_std = dataset[:TRAIN_SPLIT].std(axis=0)
+	# dataset = (dataset-data_mean)/data_std
+
+	future_target = 1
+	STEP = 1
+
+	item_to_predict_index = df.columns.get_loc(item_to_predict)
+
+	x_train_single, y_train_single = multivariate_data(dataset, dataset[:, item_to_predict_index], 0,
+													TRAIN_SPLIT, past_history,
+													future_target, STEP,
+													single_step=True)
+	x_val_single, y_val_single = multivariate_data(dataset, dataset[:, item_to_predict_index],
+												TRAIN_SPLIT, None, past_history,
+												future_target, STEP,
+												single_step=True)
+
+	train_data_single = tf.data.Dataset.from_tensor_slices((x_train_single, y_train_single))
+	train_data_single = train_data_single.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
+
+	val_data_single = tf.data.Dataset.from_tensor_slices((x_val_single, y_val_single))
+	val_data_single = val_data_single.batch(BATCH_SIZE).repeat()
+
+	single_step_model = tf.keras.models.Sequential()
+	single_step_model.add(tf.keras.layers.LSTM(32, input_shape=x_train_single.shape[-2:]))
+	single_step_model.add(tf.keras.layers.Dense(1))
+	single_step_model.add(tf.keras.layers.Dropout(0.2))
+	single_step_model.add(tf.keras.layers.Dense(1))
+	single_step_model.add(tf.keras.layers.Dropout(0.2))
+	single_step_model.add(tf.keras.layers.Dense(1))
+
+	single_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(), loss='mae') #learning_rate=0.001
+
+	single_step_history = single_step_model.fit(train_data_single, epochs=EPOCHS,
+												steps_per_epoch=EVALUATION_INTERVAL,
+												validation_data=val_data_single,
+												validation_steps=50)
+
+	plot_train_history(single_step_history,
+					'Single Step Training and validation loss')
+
+	#### Predict a single step future
+
+	for x, y in val_data_single.take(3):
+		plot = show_plot([x[0][:, item_to_predict_index].numpy(), y[0].numpy(),
+							single_step_model.predict(x)[0]], 1,
+						'Single Step Prediction')
+		plot.show()
+
 
 def main():
 	# SELECT ITEMS
@@ -130,12 +221,16 @@ def main():
 	# selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
 	print(selected_df.head())
 
-	# UNIVARIATE TRAINING AND SAVING MODEL
-	univariate_rnn(selected_df, item_to_predict)
+	# # UNIVARIATE TRAINING AND SAVING MODEL
+	# univariate_rnn(selected_df, item_to_predict)
 
-	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+
+	print(selected_df.shape)
+	print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
+	multivariate_rnn_single(selected_df, item_to_predict)
 
 if __name__ == "__main__":
 	main()
