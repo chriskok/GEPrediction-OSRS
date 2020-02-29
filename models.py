@@ -151,7 +151,7 @@ def plot_train_history(history, title):
 
 	plt.show()
 
-def multivariate_rnn_single(df, item_to_predict, past_history=100, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+def multivariate_rnn_single(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
 	dataset = df.values
 
 	future_target = 1
@@ -189,17 +189,35 @@ def multivariate_rnn_single(df, item_to_predict, past_history=100, BATCH_SIZE=32
 												validation_data=val_data_single,
 												validation_steps=50)
 
-	plot_train_history(single_step_history,
-					'Single Step Training and validation loss')
+	# plot_train_history(single_step_history, 'Single Step Training and validation loss')
 
-	#### Predict a single step future
+	# save model to models folder and features to models/features
+	single_step_model.save('models/{}_multiS_model.h5'.format(item_to_predict))
+
+	with open('models/features/{}_multiS_features.txt'.format(item_to_predict), 'w') as filehandle:
+		json.dump(df.columns.values.tolist(), filehandle)
+
+def apply_multivariate_single_step_test(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
+	dataset = df.values
+	future_target = 1
+	STEP = 1
+	item_to_predict_index = df.columns.get_loc(item_to_predict)
+
+	x_val_single, y_val_single = multivariate_data(dataset, dataset[:, item_to_predict_index],
+												TRAIN_SPLIT, None, past_history,
+												future_target, STEP,
+												single_step=True)
+	val_data_single = tf.data.Dataset.from_tensor_slices((x_val_single, y_val_single))
+	val_data_single = val_data_single.batch(BATCH_SIZE).repeat()
+
+	#### Unnormalizing the data (so we can see actual prices in GP)
+	def unnormalized(val):
+		return (val*item_std) + item_mean
 
 	for x, y in val_data_single.take(3):
-		plot = show_plot([x[0][:, item_to_predict_index].numpy(), y[0].numpy(),
-							single_step_model.predict(x)[0]], 1,
-						'Single Step Prediction')
+		plot = show_plot([unnormalized(x[0][:, item_to_predict_index].numpy()), unnormalized(y[0].numpy()),
+							unnormalized(model.predict(x)[0])], 1, 'Single Step Prediction - unnormalized')
 		plot.show()
-
 
 def main():
 	# SELECT ITEMS
@@ -217,15 +235,21 @@ def main():
 	# print(selected_df.shape)
 	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
-	# # =========== UNIVARIATE TRAINING AND SAVING MODEL =========== 
+	# # =========== UNIVARIATE =========== 
+	# TRAINING AND SAVING MODEL
 	# univariate_rnn(selected_df, item_to_predict)
 
 	# # LOADING AND APPLYING MODEL
 	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
 	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# =========== MULTIVARIATE SINGLE STEP TRAINING AND SAVING MODEL ===========
+	# =========== MULTIVARIATE SINGLE STEP ===========
+	# TRAINING AND SAVING MODEL
 	multivariate_rnn_single(selected_df, item_to_predict)
+
+	# LOADING AND APPLYING MODEL
+	loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
+	apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 if __name__ == "__main__":
 	main()

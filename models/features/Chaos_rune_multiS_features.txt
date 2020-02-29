@@ -1,0 +1,1 @@
+["Knife", "Pot", "Onion", "Adamantite_ore_sa", "Chaos_rune_sa", "Pot_sa", "Onion_sa", "Chaos_rune"]
