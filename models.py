@@ -152,13 +152,7 @@ def plot_train_history(history, title):
 	plt.show()
 
 def multivariate_rnn_single(df, item_to_predict, past_history=100, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
-	dataset = df
-
-	# # Normalize
-	# dataset = features.values
-	# data_mean = dataset[:TRAIN_SPLIT].mean(axis=0)
-	# data_std = dataset[:TRAIN_SPLIT].std(axis=0)
-	# dataset = (dataset-data_mean)/data_std
+	dataset = df.values
 
 	future_target = 1
 	STEP = 1
@@ -220,16 +214,17 @@ def main():
 	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
 	# selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
 	print(selected_df.head())
+	# print(selected_df.shape)
+	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
-	# # UNIVARIATE TRAINING AND SAVING MODEL
+	# # =========== UNIVARIATE TRAINING AND SAVING MODEL =========== 
 	# univariate_rnn(selected_df, item_to_predict)
 
 	# # LOADING AND APPLYING MODEL
 	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
 	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	print(selected_df.shape)
-	print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
+	# =========== MULTIVARIATE SINGLE STEP TRAINING AND SAVING MODEL ===========
 	multivariate_rnn_single(selected_df, item_to_predict)
 
 if __name__ == "__main__":
