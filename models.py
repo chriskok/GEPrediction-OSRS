@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
+import json
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
@@ -31,11 +32,6 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
 def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
 	uni_data = df[item_to_predict]
 	uni_data = uni_data.values
-
-	# Normalize
-	uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
-	uni_train_std = uni_data[:TRAIN_SPLIT].std()
-	uni_data = (uni_data-uni_train_mean)/uni_train_std
 
 	univariate_past_history = past_history
 	univariate_future_target = 0
@@ -65,6 +61,10 @@ def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_S
 						validation_data=val_univariate, validation_steps=50)
 
 	simple_lstm_model.save('models/{}_uni_model.h5'.format(item_to_predict))
+
+	# open output file for writing
+	with open('models/features/{}_uni_features.txt'.format(item_to_predict), 'w') as filehandle:
+		json.dump(df.columns.values.tolist(), filehandle)
 
 def create_time_steps(length):
 	time_steps = []
@@ -97,11 +97,6 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	uni_data = df[item_to_predict]
 	uni_data = uni_data.values
 
-	# Normalize
-	uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
-	uni_train_std = uni_data[:TRAIN_SPLIT].std()
-	uni_data = (uni_data-uni_train_mean)/uni_train_std
-
 	univariate_past_history = past_history
 	univariate_future_target = 0
 	x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None,
@@ -110,11 +105,9 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
 	val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
-	uni_train_std, uni_train_mean = item_std, item_mean
 	#### Unnormalizing the data (so we can see actual prices in GP)
 	def unnormalized(val):
-		nonlocal uni_train_std, uni_train_mean
-		return (val*uni_train_std) + uni_train_mean
+		return (val*item_std) + item_mean
 
 	for x, y in val_univariate.take(2):
 		# print(unnormalized(x[0].numpy()))
@@ -132,10 +125,10 @@ def main():
 	# FEATURE EXTRACTION
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
-	# FEATURE SELECTION
+	# FEATURE SELECTION & NORMALIZATION
 	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
 	# selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
-	# print(selected_df.head())
+	print(selected_df.head())
 
 	# UNIVARIATE TRAINING AND SAVING MODEL
 	univariate_rnn(selected_df, item_to_predict)

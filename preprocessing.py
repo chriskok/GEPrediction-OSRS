@@ -211,7 +211,7 @@ def main():
 	selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
 	print(selected_data.head())
 	print(selected_data.shape)
-	print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
+	# print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
 
 if __name__ == "__main__":
 	main()
