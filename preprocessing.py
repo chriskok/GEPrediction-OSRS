@@ -112,12 +112,9 @@ def regression_f_test(input_df, item_to_predict, print_scores=False):
 	# Get columns to keep and create new dataframe with those only
 	cols = fs.get_support(indices=True)
 	features_df_new = X.iloc[:,cols]
-
-	def unnormalized(val):
-		nonlocal features_std, features_mean
-		return (val*features_std) + features_mean
 	
-	return unnormalized(pd.concat([features_df_new, y], axis=1))
+	# print('std: {}, mean: {}'.format(features_std[item_to_predict], features_mean[item_to_predict]))
+	return pd.concat([features_df_new, y], axis=1), features_std[item_to_predict], features_mean[item_to_predict]
 
 def recursive_feature_elim(input_df, item_to_predict):
 	features = input_df.drop(['datetime'], axis=1).copy()
@@ -141,11 +138,11 @@ def recursive_feature_elim(input_df, item_to_predict):
 		if fit.support_[i]:
 			selected_features.append(names[i])
 
-	def unnormalized(val):
-		nonlocal features_std, features_mean
-		return (val*features_std) + features_mean
+	return pd.concat([X[selected_features], y], axis=1), features_std[item_to_predict], features_mean[item_to_predict]
 
-	return unnormalized(pd.concat([X[selected_features], y], axis=1))
+# Unnormalizing the data (so we can see actual prices in GP)
+def unnormalized(val, std, mean):
+	return (val*std) + mean
 
 def main():
 	item_to_predict = 'Rune_scimitar'
@@ -153,6 +150,11 @@ def main():
 
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 	print(preprocessed_df.head())
+
+	selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
+	print(selected_data.head())
+	print(selected_data.shape)
+	# print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
 
 if __name__ == "__main__":
 	main()

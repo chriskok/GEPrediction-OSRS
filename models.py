@@ -108,9 +108,8 @@ def univariate_rnn(df, item_to_predict, past_history=30, batch_size=32, buffer_s
 		return (val*uni_train_std) + uni_train_mean
 
 	for x, y in val_univariate.take(2):
-		print((x[0].numpy()*uni_train_std) + uni_train_mean)
 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
-						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - modified')
+						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
 		plot.show()
 
   
@@ -120,7 +119,7 @@ def main():
 
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
-	selected_df = regression_f_test(preprocessed_df, item_to_predict)
+	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
 	print(selected_df.head())
 
 	# rfe_df = recursive_feature_elim(preprocessed_df, item_to_predict)
