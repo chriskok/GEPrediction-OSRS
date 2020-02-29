@@ -47,32 +47,6 @@ def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_S
 										univariate_past_history,
 										univariate_future_target)
 
-	def create_time_steps(length):
-		time_steps = []
-		for i in range(-length, 0, 1):
-			time_steps.append(i)
-		return time_steps
-
-	def show_plot(plot_data, delta, title):
-		labels = ['History', 'True Future', 'Model Prediction']
-		marker = ['.-', 'rx', 'go']
-		time_steps = create_time_steps(plot_data[0].shape[0])
-		if delta:
-			future = delta
-		else:
-			future = 0
-
-		plt.title(title)
-		for i, x in enumerate(plot_data):
-			if i:
-				plt.plot(future, plot_data[i], marker[i], markersize=10, label=labels[i])
-			else:
-				plt.plot(time_steps, plot_data[i].flatten(), marker[i], label=labels[i])
-		plt.legend()
-		plt.xlim([time_steps[0], (future+5)*2])
-		plt.xlabel('Time-Step')
-		return plt
-
 	train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
 	train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
 
@@ -90,38 +64,81 @@ def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_S
 						steps_per_epoch=EVALUATION_INTERVAL,
 						validation_data=val_univariate, validation_steps=50)
 
-	simple_lstm_model.save('models/uni_model.h5')
+	simple_lstm_model.save('models/{}_uni_model.h5'.format(item_to_predict))
 
-# def apply_univariate(val_univariate, simple_lstm_model):
-# 	#### Predict using the simple LSTM model
-# 	for x, y in val_univariate.take(3):
-# 		plot = show_plot([x[0].numpy(), y[0].numpy(),
-# 						simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-# 		plot.show()
+def create_time_steps(length):
+	time_steps = []
+	for i in range(-length, 0, 1):
+		time_steps.append(i)
+	return time_steps
 
-# 	#### Unnormalizing the data (so we can see actual prices in GP)
-# 	def unnormalized(val):
-# 		nonlocal uni_train_std, uni_train_mean
-# 		return (val*uni_train_std) + uni_train_mean
+def show_plot(plot_data, delta, title):
+	labels = ['History', 'True Future', 'Model Prediction']
+	marker = ['.-', 'rx', 'go']
+	time_steps = create_time_steps(plot_data[0].shape[0])
+	if delta:
+		future = delta
+	else:
+		future = 0
 
-# 	for x, y in val_univariate.take(2):
-# 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
-# 						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
-# 		plot.show()
+	plt.title(title)
+	for i, x in enumerate(plot_data):
+		if i:
+			plt.plot(future, plot_data[i], marker[i], markersize=10, label=labels[i])
+		else:
+			plt.plot(time_steps, plot_data[i].flatten(), marker[i], label=labels[i])
+	plt.legend()
+	plt.xlim([time_steps[0], (future+5)*2])
+	plt.xlabel('Time-Step')
+	return plt
 
-  
+def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
+
+	uni_data = df[item_to_predict]
+	uni_data = uni_data.values
+
+	# Normalize
+	uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
+	uni_train_std = uni_data[:TRAIN_SPLIT].std()
+	uni_data = (uni_data-uni_train_mean)/uni_train_std
+
+	univariate_past_history = past_history
+	univariate_future_target = 0
+	x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None,
+										univariate_past_history,
+										univariate_future_target)
+	val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
+	val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
+
+	uni_train_std, uni_train_mean = item_std, item_mean
+	#### Unnormalizing the data (so we can see actual prices in GP)
+	def unnormalized(val):
+		nonlocal uni_train_std, uni_train_mean
+		return (val*uni_train_std) + uni_train_mean
+
+	for x, y in val_univariate.take(2):
+		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
+						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
+		plot.show()
+
 def main():
 	item_to_predict = 'Chaos_rune'
 	items_selected = ['Chaos_rune', 'Death_rune', 'Nature_rune', 'Cosmic_rune', 'Law_rune']
 
+	# FEATURE EXTRACTION
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
+	# FEATURE SELECTION
 	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
-	print(selected_df.head())
+	# selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
+	# print(selected_df.head())
 
-	# rfe_df = recursive_feature_elim(preprocessed_df, item_to_predict)
-
+	# UNIVARIATE TRAINING AND SAVING MODEL
 	univariate_rnn(selected_df, item_to_predict)
+
+	# LOADING AND APPLYING MODEL
+	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 if __name__ == "__main__":
 	main()
