@@ -295,9 +295,6 @@ def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, ite
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 	
-	# def revert_target(val):
-	# 	return (val * data_std[item_to_predict_index]) + data_mean[item_to_predict_index]
-	
 	for x, y in val_data_multi.take(3):
 		multi_step_plot(unnormalized(x[0].numpy()), unnormalized(y[0].numpy()), unnormalized(model.predict(x)[0]), item_to_predict_index)
 
