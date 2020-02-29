@@ -28,7 +28,7 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
 		labels.append(dataset[i+target_size])
 	return np.array(data), np.array(labels)
 
-def univariate_rnn(df, item_to_predict, past_history=30, batch_size=32, buffer_size=30, eval_intervals=200, n_epochs=10):
+def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
 	uni_data = df[item_to_predict]
 	uni_data = uni_data.values
 
@@ -73,9 +73,6 @@ def univariate_rnn(df, item_to_predict, past_history=30, batch_size=32, buffer_s
 		plt.xlabel('Time-Step')
 		return plt
 
-	BATCH_SIZE = batch_size
-	BUFFER_SIZE = buffer_size
-
 	train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
 	train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
 
@@ -89,28 +86,28 @@ def univariate_rnn(df, item_to_predict, past_history=30, batch_size=32, buffer_s
 
 	simple_lstm_model.compile(optimizer='adam', loss='mae')
 
-	EVALUATION_INTERVAL = eval_intervals
-	EPOCHS = n_epochs
-
 	simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
 						steps_per_epoch=EVALUATION_INTERVAL,
 						validation_data=val_univariate, validation_steps=50)
 
-	#### Predict using the simple LSTM model
-	for x, y in val_univariate.take(3):
-		plot = show_plot([x[0].numpy(), y[0].numpy(),
-						simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-		plot.show()
+	simple_lstm_model.save('models/uni_model.h5')
 
-	#### Unnormalizing the data (so we can see actual prices in GP)
-	def unnormalized(val):
-		nonlocal uni_train_std, uni_train_mean
-		return (val*uni_train_std) + uni_train_mean
+# def apply_univariate(val_univariate, simple_lstm_model):
+# 	#### Predict using the simple LSTM model
+# 	for x, y in val_univariate.take(3):
+# 		plot = show_plot([x[0].numpy(), y[0].numpy(),
+# 						simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
+# 		plot.show()
 
-	for x, y in val_univariate.take(2):
-		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
-						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
-		plot.show()
+# 	#### Unnormalizing the data (so we can see actual prices in GP)
+# 	def unnormalized(val):
+# 		nonlocal uni_train_std, uni_train_mean
+# 		return (val*uni_train_std) + uni_train_mean
+
+# 	for x, y in val_univariate.take(2):
+# 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
+# 						unnormalized(simple_lstm_model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
+# 		plot.show()
 
   
 def main():
