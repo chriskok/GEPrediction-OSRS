@@ -130,8 +130,13 @@ def prepare_data(item_to_predict, items_selected, verbose=False):
 
 # FEATURE SELECTION FUNCTIONS
 
-def regression_f_test(input_df, item_to_predict, print_scores=False):
+def regression_f_test(input_df, item_to_predict, print_scores=False, specific_features=None):
 	features = input_df.drop(['datetime'], axis=1).copy()
+
+	if specific_features is not None: 
+		features = features[specific_features]
+		# print("SPECIFIC FEATURES USED")
+		# print(features.head())
 
 	# normalize dataset
 	features_std = features.std()
