@@ -444,13 +444,13 @@ def main():
 	# print(selected_df.shape)
 	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
-	# =========== UNIVARIATE =========== 
-	# TRAINING AND SAVING MODEL
-	# univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
+	# # =========== UNIVARIATE =========== 
+	# # TRAINING AND SAVING MODEL
+	# # univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
 
-	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
 
 	# # =========== MULTIVARIATE SINGLE STEP ===========
 	# # TRAINING AND SAVING MODEL
@@ -468,18 +468,18 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
 	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# # =========== HYPERPARAMETER TUNING ===========
-	# # define the grid search parameters
-	# # batch_size = [16, 32, 64, 128]
-	# # buffer_size = [30,50,100]
-	# # epochs = [10,20,40,80]
-	# # eval_interval = [100,200,400]
-	# # num_dropout_layers = [1,2,3]
-	# # num_lstm_units = [16,32,64,128]
-	# # learning = [0.001,0.005,0.0001]
-	# # past_history= [10,30,100,200]
-	# # multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
-	# # multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
-	# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=[5,10,15,20,40])
+	# =========== HYPERPARAMETER TUNING ===========
+	# define the grid search parameters
+	batch_size = [16, 32, 64, 128]
+	buffer_size = [30,50,100]
+	epochs = [20,40]
+	eval_interval = [100,400]
+	num_dropout_layers = [1,2,3]
+	num_lstm_units = [8,16,32,64,128]
+	learning = [0.0001]
+	past_history= [10,30,100,200]
+	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, learning=learning, past_history=past_history, epochs=epochs)
+	multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, learning=learning, past_history=past_history, epochs=epochs)
+	univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=past_history, num_lstm_units=num_lstm_units)
 if __name__ == "__main__":
 	main()

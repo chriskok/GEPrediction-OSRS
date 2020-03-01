@@ -21,3 +21,8 @@ config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.005_hist-30,
 config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.0001_hist-30, mean: 0.38950776159763334, std: 0.0045074899404671165
 BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.0001_hist-30, mean: 0.38950776159763334, std: 0.0045074899404671165
 
+
+Hyperparameter Tuning - 2020-03-01 22:45:59.611769
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.0001_hist-10, mean: 0.46719537270069117, std: 0.007845465526908488
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.0001_hist-30, mean: 0.38633628696203226, std: 0.0033689921015857324
