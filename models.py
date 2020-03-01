@@ -34,7 +34,8 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
 		labels.append(dataset[i+target_size])
 	return np.array(data), np.array(labels)
 
-def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+def univariate_rnn(df, item_to_predict, save_model=True, verbose=1, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, \
+	EVALUATION_INTERVAL=200, EPOCHS=10, lstm_units=8):
 	uni_data = df[item_to_predict]
 	uni_data = uni_data.values
 
@@ -55,21 +56,24 @@ def univariate_rnn(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_S
 	val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 	simple_lstm_model = tf.keras.models.Sequential([
-		tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
+		tf.keras.layers.LSTM(lstm_units, input_shape=x_train_uni.shape[-2:]),
 		tf.keras.layers.Dense(1)
 	])
 
 	simple_lstm_model.compile(optimizer='adam', loss='mae')
 
-	simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
+	simple_lstm_history = simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
 						steps_per_epoch=EVALUATION_INTERVAL,
-						validation_data=val_univariate, validation_steps=50)
+						validation_data=val_univariate, validation_steps=50, verbose=verbose)
 
-	simple_lstm_model.save('models/{}_uni_model.h5'.format(item_to_predict))
+	if (save_model):
+		simple_lstm_model.save('models/{}_uni_model.h5'.format(item_to_predict))
 
-	# open output file for writing
-	with open('models/features/{}_uni_features.txt'.format(item_to_predict), 'w') as filehandle:
-		json.dump(df.columns.values.tolist(), filehandle)
+		# open output file for writing
+		with open('models/features/{}_uni_features.txt'.format(item_to_predict), 'w') as filehandle:
+			json.dump(df.columns.values.tolist(), filehandle)
+	
+	return simple_lstm_history.history
 
 def create_time_steps(length):
 	time_steps = []
@@ -87,7 +91,7 @@ def show_plot(plot_data, delta, title):
 		future = 0
 
 	plt.title(title)
-	for i, x in enumerate(plot_data):
+	for i, _ in enumerate(plot_data):
 		if i:
 			plt.plot(future, plot_data[i], marker[i], markersize=10, label=labels[i])
 		else:
@@ -156,7 +160,8 @@ def plot_train_history(history, title):
 
 	plt.show()
 
-def multivariate_rnn_single(df, item_to_predict, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+def multivariate_rnn_single(df, item_to_predict, save_model=True, verbose=1, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, \
+	EVALUATION_INTERVAL=200, EPOCHS=10, num_dropout=1, lstm_units=32, learning_rate=0.001):
 	dataset = df.values
 
 	future_target = 1
@@ -180,27 +185,29 @@ def multivariate_rnn_single(df, item_to_predict, past_history=30, BATCH_SIZE=32,
 	val_data_single = val_data_single.batch(BATCH_SIZE).repeat()
 
 	single_step_model = tf.keras.models.Sequential()
-	single_step_model.add(tf.keras.layers.LSTM(32, input_shape=x_train_single.shape[-2:]))
+	single_step_model.add(tf.keras.layers.LSTM(lstm_units, input_shape=x_train_single.shape[-2:]))
 	single_step_model.add(tf.keras.layers.Dense(1))
-	single_step_model.add(tf.keras.layers.Dropout(0.2))
-	single_step_model.add(tf.keras.layers.Dense(1))
-	single_step_model.add(tf.keras.layers.Dropout(0.2))
-	single_step_model.add(tf.keras.layers.Dense(1))
+	for _ in range(num_dropout):
+		single_step_model.add(tf.keras.layers.Dropout(0.2))
+		single_step_model.add(tf.keras.layers.Dense(1))
 
-	single_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(), loss='mae') #learning_rate=0.001
+	single_step_model.compile(optimizer=tf.keras.optimizers.adam(learning_rate=learning_rate), loss='mae') #learning_rate=0.001
 
 	single_step_history = single_step_model.fit(train_data_single, epochs=EPOCHS,
 												steps_per_epoch=EVALUATION_INTERVAL,
 												validation_data=val_data_single,
-												validation_steps=50)
+												validation_steps=50, verbose=verbose)
 
 	# plot_train_history(single_step_history, 'Single Step Training and validation loss')
 
-	# save model to models folder and features to models/features
-	single_step_model.save('models/{}_multiS_model.h5'.format(item_to_predict))
+	if (save_model):
+		# save model to models folder and features to models/features
+		single_step_model.save('models/{}_multiS_model.h5'.format(item_to_predict))
 
-	with open('models/features/{}_multiS_features.txt'.format(item_to_predict), 'w') as filehandle:
-		json.dump(df.columns.values.tolist(), filehandle)
+		with open('models/features/{}_multiS_features.txt'.format(item_to_predict), 'w') as filehandle:
+			json.dump(df.columns.values.tolist(), filehandle)
+
+	return single_step_history.history
 
 def apply_multivariate_single_step_test(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
 	dataset = df.values
@@ -264,7 +271,7 @@ def multivariate_rnn_multi(df, item_to_predict, save_model=True, verbose=1, futu
 	# multi_step_model.add(tf.keras.layers.LSTM(32, return_sequences=True))
 	multi_step_model.add(tf.keras.layers.LSTM(int(lstm_units/2), activation='sigmoid'))
 	multi_step_model.add(tf.keras.layers.Dense(future_target)) 
-	for i in range(num_dropout):
+	for _ in range(num_dropout):
 		multi_step_model.add(tf.keras.layers.Dropout(0.5))
 		multi_step_model.add(tf.keras.layers.Dense(future_target))
 
@@ -305,74 +312,117 @@ def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, ite
 	for x, y in val_data_multi.take(3):
 		multi_step_plot(unnormalized(x[0].numpy()), unnormalized(y[0].numpy()), unnormalized(model.predict(x)[0]), item_to_predict_index)
 
-def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict):
-
-	# Parameters to tune:
-	# future_target=5, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, 
-	# EPOCHS=10, num_dropout=1, lstm_units=64, learning_rate=0.001
+def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict, batch_size=[32], buffer_size = [30], \
+	epochs = [20], eval_interval = [100], num_dropout_layers = [2],	num_lstm_units = [64], \
+		learning = [0.001], past_history = [30]):
 
 	# Write results to file
 	current_time = datetime.datetime.utcnow()
-	HP_FILE = 'data/HP-Tuning_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
+	HP_FILE = 'data/HP-Tuning-MultiM_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
 
 	with open(HP_FILE, 'a') as the_file:
-		the_file.write('Hyperparameter Tuning - {}\n\n'.format(current_time))
-
-	# define the grid search parameters
-	batch_size = [16, 32, 64, 128]
-	buffer_size = [50,100]
-	epochs = [5,10,20]
-	eval_interval = [100]
-
-	num_dropout_layers = [1,2,3]
-	num_lstm_units = [16,32,64,128]
-	learning = [0.001,0.005,0.0005]
+		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
 
 	lowest_loss, lowest_std = 100, 100
 	best_config = "none"
 	for a in batch_size:
 		for b in buffer_size:
-			for c in eval_interval:
-				for d in epochs:
-					result = multivariate_rnn_multi(df, item_to_predict, save_model=False, verbose=0, \
-						BATCH_SIZE=a, BUFFER_SIZE=b, EVALUATION_INTERVAL=c, EPOCHS=d)
-					loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
-					current_config = "batch-{}_buffer-{}_eval-{}_epoch-{}".format(a,b,c,d)
-					mean_loss = np.mean(loss_array)
-					std_loss = np.std(loss_array)
-					if (mean_loss < lowest_loss):
-						lowest_loss = mean_loss
-						lowest_std = std_loss
-						best_config = current_config
-					print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
-					with open(HP_FILE, 'a') as the_file:
-						the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
+			for c in epochs:
+				for d in eval_interval:
+					for e in num_dropout_layers:
+						for f in num_lstm_units:
+							for g in learning:
+								for h in past_history:
+									result = multivariate_rnn_multi(df, item_to_predict, save_model=False, verbose=0, \
+										BATCH_SIZE=a, BUFFER_SIZE=b, EVALUATION_INTERVAL=d, EPOCHS=c, num_dropout=e, lstm_units=f, learning_rate=g, past_history=h)
+									loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
+									current_config = "batch-{}_buffer-{}_epoch-{}_eval-{}_drop-{}_lstm-{}_learn-{}_hist-{}".format(a,b,c,d,e,f,g,h)
+									mean_loss = np.mean(loss_array)
+									std_loss = np.std(loss_array)
+									if (mean_loss < lowest_loss):
+										lowest_loss = mean_loss
+										lowest_std = std_loss
+										best_config = current_config
+									print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
+									with open(HP_FILE, 'a') as the_file:
+										the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
 
 	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, lowest_std))
 	with open(HP_FILE, 'a') as the_file:
 		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
 
+def multivariate_rnn_single_hyperparameter_tuning(df, item_to_predict, batch_size=[32], buffer_size = [30], \
+	epochs = [20], eval_interval = [100], num_dropout_layers = [2],	num_lstm_units = [32], \
+		learning = [0.001], past_history = [30]):
+
+	# Write results to file
+	current_time = datetime.datetime.utcnow()
+	HP_FILE = 'data/HP-Tuning-MultiS_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
+
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
+
 	lowest_loss, lowest_std = 100, 100
 	best_config = "none"
-	for a in num_dropout_layers:
-		for b in num_lstm_units:
-			for c in learning:
-				result = multivariate_rnn_multi(df, item_to_predict, save_model=False, verbose=0, \
-					BATCH_SIZE=32, EPOCHS=30, EVALUATION_INTERVAL=100, \
-					num_dropout=a, lstm_units=b, learning_rate=c)
-				loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
-				current_config = "drop-{}_units-{}_learning-{}".format(a,b,c)
-				mean_loss = np.mean(loss_array)
-				std_loss = np.std(loss_array)
-				if (mean_loss < lowest_loss):
-					lowest_loss = mean_loss
-					lowest_std = std_loss
-					best_config = current_config
-		
-				print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
-				with open(HP_FILE, 'a') as the_file:
-					the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
-	
+	for a in batch_size:
+		for b in buffer_size:
+			for c in epochs:
+				for d in eval_interval:
+					for e in num_dropout_layers:
+						for f in num_lstm_units:
+							for g in learning:
+								for h in past_history:
+									result = multivariate_rnn_single(df, item_to_predict, save_model=False, verbose=0, \
+										BATCH_SIZE=a, BUFFER_SIZE=b, EVALUATION_INTERVAL=d, EPOCHS=c, num_dropout=e, lstm_units=f, learning_rate=g, past_history=h)
+									loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
+									current_config = "batch-{}_buffer-{}_epoch-{}_eval-{}_drop-{}_lstm-{}_learn-{}_hist-{}".format(a,b,c,d,e,f,g,h)
+									mean_loss = np.mean(loss_array)
+									std_loss = np.std(loss_array)
+									if (mean_loss < lowest_loss):
+										lowest_loss = mean_loss
+										lowest_std = std_loss
+										best_config = current_config
+									print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
+									with open(HP_FILE, 'a') as the_file:
+										the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
+
+	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, lowest_std))
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
+
+def univariate_rnn_hyperparameter_tuning(df, item_to_predict, batch_size=[32], buffer_size = [30], \
+	epochs = [20], eval_interval = [100], num_dropout_layers = [2],	num_lstm_units = [8], \
+		learning = [0.001], past_history = [30]):
+
+	# Write results to file
+	current_time = datetime.datetime.utcnow()
+	HP_FILE = 'data/HP-Tuning-Uni_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
+
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
+
+	lowest_loss, lowest_std = 100, 100
+	best_config = "none"
+	for a in batch_size:
+		for b in buffer_size:
+			for c in epochs:
+				for d in eval_interval:
+					for f in num_lstm_units:
+						for h in past_history:
+							result = univariate_rnn(df, item_to_predict, save_model=False, verbose=0, \
+								BATCH_SIZE=a, BUFFER_SIZE=b, EVALUATION_INTERVAL=d, EPOCHS=c, lstm_units=f, past_history=h)
+							loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
+							current_config = "batch-{}_buffer-{}_epoch-{}_eval-{}_lstm-{}_hist-{}".format(a,b,c,d,f,h)
+							mean_loss = np.mean(loss_array)
+							std_loss = np.std(loss_array)
+							if (mean_loss < lowest_loss):
+								lowest_loss = mean_loss
+								lowest_std = std_loss
+								best_config = current_config
+							print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
+							with open(HP_FILE, 'a') as the_file:
+								the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
+
 	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, lowest_std))
 	with open(HP_FILE, 'a') as the_file:
 		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
@@ -417,7 +467,18 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
 	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# # =========== HYPERPARAMETER TUNING ===========
-	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict)
+	# =========== HYPERPARAMETER TUNING ===========
+	# define the grid search parameters
+	# batch_size = [16, 32, 64, 128]
+	# buffer_size = [30,50,100]
+	# epochs = [10,20,40,80]
+	# eval_interval = [100,200,400]
+	# num_dropout_layers = [1,2,3]
+	# num_lstm_units = [16,32,64,128]
+	learning = [0.001,0.005,0.0001]
+	# past_history= [10,30,100,200]
+	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
+	multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
+	# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
 if __name__ == "__main__":
 	main()

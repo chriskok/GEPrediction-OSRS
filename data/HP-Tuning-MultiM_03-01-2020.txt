@@ -1,0 +1,6 @@
+
+Hyperparameter Tuning - 2020-03-01 18:24:42.100880
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
+
