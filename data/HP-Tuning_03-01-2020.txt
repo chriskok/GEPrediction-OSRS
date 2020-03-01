@@ -1,0 +1,7 @@
+Hyperparameter Tuning - 2020-03-01 05:46:50.353011
+
+config: batch-16_buffer-50_eval-100_epoch-5, mean: 0.3349204693436622, std: 0.04872373870890697
+config: batch-16_buffer-50_eval-100_epoch-10, mean: 0.3361513645350933, std: 0.04323338800143614
+config: batch-16_buffer-50_eval-100_epoch-20, mean: 0.28820336854457856, std: 0.011152522980184796
+config: batch-16_buffer-100_eval-100_epoch-5, mean: 0.3749788017868996, std: 0.059334571521111955
+config: batch-16_buffer-100_eval-100_epoch-10, mean: 0.3061031174659729, std: 0.009478714423163252

@@ -9,6 +9,7 @@ import numpy as np
 import os
 import pandas as pd
 import json
+import datetime
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
@@ -310,13 +311,19 @@ def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict):
 	# future_target=5, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, 
 	# EPOCHS=10, num_dropout=1, lstm_units=64, learning_rate=0.001
 
+	# Write results to file
+	current_time = datetime.datetime.utcnow()
+	HP_FILE = 'data/HP-Tuning_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
+
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write('Hyperparameter Tuning - {}\n\n'.format(current_time))
+
 	# define the grid search parameters
-	# batch_size = [16, 32, 40, 60, 80, 100]
-	batch_size = [16, 32, 64]
-	buffer_size = [30,50,100]
-	epochs = [10,20,50]
-	eval_interval = [50,100,200]
-	
+	batch_size = [16, 32, 64, 128]
+	buffer_size = [50,100]
+	epochs = [5,10,20]
+	eval_interval = [100]
+
 	num_dropout_layers = [1,2,3]
 	num_lstm_units = [16,32,64,128]
 	learning = [0.001,0.005,0.0005]
@@ -337,15 +344,44 @@ def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict):
 						lowest_loss = mean_loss
 						lowest_std = std_loss
 						best_config = current_config
-			
 					print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
-	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, std_loss))
+					with open(HP_FILE, 'a') as the_file:
+						the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
+
+	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, lowest_std))
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
+
+	lowest_loss, lowest_std = 100, 100
+	best_config = "none"
+	for a in num_dropout_layers:
+		for b in num_lstm_units:
+			for c in learning:
+				result = multivariate_rnn_multi(df, item_to_predict, save_model=False, verbose=0, \
+					BATCH_SIZE=32, EPOCHS=30, EVALUATION_INTERVAL=100, \
+					num_dropout=a, lstm_units=b, learning_rate=c)
+				loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
+				current_config = "drop-{}_units-{}_learning-{}".format(a,b,c)
+				mean_loss = np.mean(loss_array)
+				std_loss = np.std(loss_array)
+				if (mean_loss < lowest_loss):
+					lowest_loss = mean_loss
+					lowest_std = std_loss
+					best_config = current_config
+		
+				print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
+				with open(HP_FILE, 'a') as the_file:
+					the_file.write("config: {}, mean: {}, std: {}\n".format(current_config, mean_loss, std_loss))
+	
+	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, lowest_std))
+	with open(HP_FILE, 'a') as the_file:
+		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
 
 def main():
 	# SELECT ITEMS
 	items_selected = item_selection()
 	# print(items_selected)
-	item_to_predict = 'Chaos_rune'
+	item_to_predict = 'Runite_ore'
 
 	# FEATURE EXTRACTION
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
@@ -381,7 +417,7 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
 	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# =========== HYPERPARAMETER TUNING ===========
+	# # =========== HYPERPARAMETER TUNING ===========
 	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict)
 if __name__ == "__main__":
 	main()
