@@ -45,8 +45,11 @@ def appendToCSV(filename):
         new_array = [current_timestamp, time.strftime('%Y-%m-%dT%H:%M:%S %Z',time.localtime(time.time())), 25]
         GE_writer.writerow(new_array)
 
-filename = 'test'
-if os.path.isfile('data/{}.csv'.format(filename)):
-    appendToCSV(filename)
-else:
-    writeToCSV(filename)
+# filename = 'test'
+# if os.path.isfile('data/{}.csv'.format(filename)):
+#     appendToCSV(filename)
+# else:
+#     writeToCSV(filename)
+
+test_array = [1,2,3,4,5]
+print(test_array[-3:])

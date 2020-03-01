@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 from preprocessing import prepare_data, regression_f_test, recursive_feature_elim, item_selection
+from sklearn.model_selection import GridSearchCV
+
 import tensorflow as tf
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -10,6 +12,7 @@ import json
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 TRAIN_SPLIT = 750
 tf.random.set_seed(13)
@@ -235,7 +238,8 @@ def multi_step_plot(history, true_future, prediction, item_to_predict_index, sav
 	if (save_imgs): fig.savefig('imgs/{}.png'.format(index))
 	plt.show()
 
-def multivariate_rnn_multi(df, item_to_predict, future_target = 5, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10):
+def multivariate_rnn_multi(df, item_to_predict, save_model=True, verbose=1, future_target=5, past_history=30, \
+	BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, EPOCHS=10, num_dropout=1, lstm_units=64, learning_rate=0.001):
 	dataset = df.values
 	item_to_predict_index = df.columns.get_loc(item_to_predict)
 
@@ -253,32 +257,34 @@ def multivariate_rnn_multi(df, item_to_predict, future_target = 5, past_history=
 	val_data_multi = val_data_multi.batch(BATCH_SIZE).repeat()
 
 	multi_step_model = tf.keras.models.Sequential()
-	multi_step_model.add(tf.keras.layers.LSTM(64,
+	multi_step_model.add(tf.keras.layers.LSTM(int(lstm_units),
 											return_sequences=True,
 											input_shape=x_train_multi.shape[-2:]))
 	# multi_step_model.add(tf.keras.layers.LSTM(32, return_sequences=True))
-	multi_step_model.add(tf.keras.layers.LSTM(32, activation='relu'))
+	multi_step_model.add(tf.keras.layers.LSTM(int(lstm_units/2), activation='sigmoid'))
 	multi_step_model.add(tf.keras.layers.Dense(future_target)) 
-	multi_step_model.add(tf.keras.layers.Dropout(0.5))
-	multi_step_model.add(tf.keras.layers.Dense(future_target))
+	for i in range(num_dropout):
+		multi_step_model.add(tf.keras.layers.Dropout(0.5))
+		multi_step_model.add(tf.keras.layers.Dense(future_target))
 
 	# , kernel_regularizer=tf.keras.regularizers.l2(0.04)
 	# multi_step_model.add(tf.keras.layers.BatchNormalization())
 
-	multi_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(clipvalue=1.0), loss='mae')
+	multi_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(learning_rate=learning_rate), loss='mae') # clipvalue=1.0, 
 
 	multi_step_history = multi_step_model.fit(train_data_multi, epochs=EPOCHS,
 											steps_per_epoch=EVALUATION_INTERVAL,
 											validation_data=val_data_multi,
-											validation_steps=50)
+											validation_steps=50, verbose=verbose)
 
-	# plot_train_history(multi_step_history, 'Multi-Step Training and validation loss')
+	if (save_model):
+		# save model to models folder and features to models/features
+		multi_step_model.save('models/{}_multiM_model.h5'.format(item_to_predict))
 
-	# save model to models folder and features to models/features
-	multi_step_model.save('models/{}_multiM_model.h5'.format(item_to_predict))
-
-	with open('models/features/{}_multiM_features.txt'.format(item_to_predict), 'w') as filehandle:
-		json.dump(df.columns.values.tolist(), filehandle)
+		with open('models/features/{}_multiM_features.txt'.format(item_to_predict), 'w') as filehandle:
+			json.dump(df.columns.values.tolist(), filehandle)
+	
+	return multi_step_history.history
 
 def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30, BATCH_SIZE=32):
 	dataset = df.values
@@ -297,6 +303,43 @@ def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, ite
 	
 	for x, y in val_data_multi.take(3):
 		multi_step_plot(unnormalized(x[0].numpy()), unnormalized(y[0].numpy()), unnormalized(model.predict(x)[0]), item_to_predict_index)
+
+def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict):
+
+	# Parameters to tune:
+	# future_target=5, past_history=30, BATCH_SIZE=32, BUFFER_SIZE=30, EVALUATION_INTERVAL=200, 
+	# EPOCHS=10, num_dropout=1, lstm_units=64, learning_rate=0.001
+
+	# define the grid search parameters
+	# batch_size = [16, 32, 40, 60, 80, 100]
+	batch_size = [16, 32, 64]
+	buffer_size = [30,50,100]
+	epochs = [10,20,50]
+	eval_interval = [50,100,200]
+	
+	num_dropout_layers = [1,2,3]
+	num_lstm_units = [16,32,64,128]
+	learning = [0.001,0.005,0.0005]
+
+	lowest_loss, lowest_std = 100, 100
+	best_config = "none"
+	for a in batch_size:
+		for b in buffer_size:
+			for c in eval_interval:
+				for d in epochs:
+					result = multivariate_rnn_multi(df, item_to_predict, save_model=False, verbose=0, \
+						BATCH_SIZE=a, BUFFER_SIZE=b, EVALUATION_INTERVAL=c, EPOCHS=d)
+					loss_array = np.array(result['val_loss'][-5:])  # make array of last 5 validation loss values
+					current_config = "batch-{}_buffer-{}_eval-{}_epoch-{}".format(a,b,c,d)
+					mean_loss = np.mean(loss_array)
+					std_loss = np.std(loss_array)
+					if (mean_loss < lowest_loss):
+						lowest_loss = mean_loss
+						lowest_std = std_loss
+						best_config = current_config
+			
+					print("config: {}, mean: {}, std: {}".format(current_config, mean_loss, std_loss))
+	print("BEST CONFIG: {}, mean: {}, std: {}".format(best_config, lowest_loss, std_loss))
 
 def main():
 	# SELECT ITEMS
@@ -330,13 +373,15 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
 	# apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# =========== MULTIVARIATE MULTI STEP ===========
-	# TRAINING AND SAVING MODEL
+	# # =========== MULTIVARIATE MULTI STEP ===========
+	# # TRAINING AND SAVING MODEL
 	# multivariate_rnn_multi(selected_df, item_to_predict)
 
-	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
+	# =========== HYPERPARAMETER TUNING ===========
+	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict)
 if __name__ == "__main__":
 	main()
