@@ -4,3 +4,19 @@ Hyperparameter Tuning - 2020-03-01 18:24:42.100880
 config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
 BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
 
+
+Hyperparameter Tuning - 2020-03-01 18:30:31.942914
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.005_hist-30, mean: 0.45234986603260047, std: 0.0891143264552858
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.0001_hist-30, mean: 0.6262616890668868, std: 0.013847072663461007
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3401877522468567, std: 0.03852019807584549
+
+
+Hyperparameter Tuning - 2020-03-01 18:36:02.880178
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.35930857241153713, std: 0.046279187579170246
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.005_hist-30, mean: 0.4163335701823234, std: 0.06519648069798296
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.0001_hist-30, mean: 0.6284619796276092, std: 0.024542227855376367
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.35930857241153713, std: 0.046279187579170246
+

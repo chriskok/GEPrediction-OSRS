@@ -19,6 +19,7 @@ TRAIN_SPLIT = 750
 tf.random.set_seed(13)
 STEP = 1
 
+# =========== UNIVARIATE SINGLE STEP FUNCTIONS =========== 
 def univariate_data(dataset, start_index, end_index, history_size, target_size):
 	data = []
 	labels = []
@@ -118,13 +119,12 @@ def apply_univariate_test(df, item_to_predict, model, item_std, item_mean, past_
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	for x, y in val_univariate.take(2):
-		# print(unnormalized(x[0].numpy()))
+	for x, y in val_univariate.take(4):
 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
 						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
 		plot.show()
 
-# MULTIVARIATE PREDICTION FUNCTIONS
+# =========== MULTIVARIATE SINGLE STEP FUNCTIONS =========== 
 def multivariate_data(dataset, target, start_index, end_index, history_size,
 					  target_size, step, single_step=False):
 	data = []
@@ -191,7 +191,7 @@ def multivariate_rnn_single(df, item_to_predict, save_model=True, verbose=1, pas
 		single_step_model.add(tf.keras.layers.Dropout(0.2))
 		single_step_model.add(tf.keras.layers.Dense(1))
 
-	single_step_model.compile(optimizer=tf.keras.optimizers.adam(learning_rate=learning_rate), loss='mae') #learning_rate=0.001
+	single_step_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate), loss='mae') #learning_rate=0.001
 
 	single_step_history = single_step_model.fit(train_data_single, epochs=EPOCHS,
 												steps_per_epoch=EVALUATION_INTERVAL,
@@ -230,6 +230,7 @@ def apply_multivariate_single_step_test(df, item_to_predict, model, item_std, it
 							unnormalized(model.predict(x)[0])], 1, 'Single Step Prediction - unnormalized')
 		plot.show()
 
+# =========== MULTIVARIATE MULTI STEP FUNCTIONS =========== 
 def multi_step_plot(history, true_future, prediction, item_to_predict_index, save_imgs=False, img_title="plot", index=0):
 	fig = plt.figure(figsize=(12, 6))
 	num_in = create_time_steps(len(history))
@@ -278,7 +279,7 @@ def multivariate_rnn_multi(df, item_to_predict, save_model=True, verbose=1, futu
 	# , kernel_regularizer=tf.keras.regularizers.l2(0.04)
 	# multi_step_model.add(tf.keras.layers.BatchNormalization())
 
-	multi_step_model.compile(optimizer=tf.keras.optimizers.RMSprop(learning_rate=learning_rate), loss='mae') # clipvalue=1.0, 
+	multi_step_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate), loss='mae') # clipvalue=1.0, 
 
 	multi_step_history = multi_step_model.fit(train_data_multi, epochs=EPOCHS,
 											steps_per_epoch=EVALUATION_INTERVAL,
@@ -312,6 +313,7 @@ def apply_multivariate_multi_step_test(df, item_to_predict, model, item_std, ite
 	for x, y in val_data_multi.take(3):
 		multi_step_plot(unnormalized(x[0].numpy()), unnormalized(y[0].numpy()), unnormalized(model.predict(x)[0]), item_to_predict_index)
 
+# =========== HYPERPARAMETER TUNING FUNCTIONS =========== 
 def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict, batch_size=[32], buffer_size = [30], \
 	epochs = [20], eval_interval = [100], num_dropout_layers = [2],	num_lstm_units = [64], \
 		learning = [0.001], past_history = [30]):
@@ -391,8 +393,7 @@ def multivariate_rnn_single_hyperparameter_tuning(df, item_to_predict, batch_siz
 		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
 
 def univariate_rnn_hyperparameter_tuning(df, item_to_predict, batch_size=[32], buffer_size = [30], \
-	epochs = [20], eval_interval = [100], num_dropout_layers = [2],	num_lstm_units = [8], \
-		learning = [0.001], past_history = [30]):
+	epochs = [20], eval_interval = [100],	num_lstm_units = [8], past_history = [30]):
 
 	# Write results to file
 	current_time = datetime.datetime.utcnow()
@@ -443,13 +444,13 @@ def main():
 	# print(selected_df.shape)
 	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
-	# # =========== UNIVARIATE =========== 
+	# =========== UNIVARIATE =========== 
 	# TRAINING AND SAVING MODEL
-	# univariate_rnn(selected_df, item_to_predict)
+	# univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
 
-	# # LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# LOADING AND APPLYING MODEL
+	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
 
 	# # =========== MULTIVARIATE SINGLE STEP ===========
 	# # TRAINING AND SAVING MODEL
@@ -467,18 +468,18 @@ def main():
 	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
 	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
-	# =========== HYPERPARAMETER TUNING ===========
-	# define the grid search parameters
-	# batch_size = [16, 32, 64, 128]
-	# buffer_size = [30,50,100]
-	# epochs = [10,20,40,80]
-	# eval_interval = [100,200,400]
-	# num_dropout_layers = [1,2,3]
-	# num_lstm_units = [16,32,64,128]
-	learning = [0.001,0.005,0.0001]
-	# past_history= [10,30,100,200]
-	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
-	multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
-	# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
+	# # =========== HYPERPARAMETER TUNING ===========
+	# # define the grid search parameters
+	# # batch_size = [16, 32, 64, 128]
+	# # buffer_size = [30,50,100]
+	# # epochs = [10,20,40,80]
+	# # eval_interval = [100,200,400]
+	# # num_dropout_layers = [1,2,3]
+	# # num_lstm_units = [16,32,64,128]
+	# # learning = [0.001,0.005,0.0001]
+	# # past_history= [10,30,100,200]
+	# # multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
+	# # multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, learning=learning)
+	# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=[5,10,15,20,40])
 if __name__ == "__main__":
 	main()
