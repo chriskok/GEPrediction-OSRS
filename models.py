@@ -323,7 +323,7 @@ def multivariate_rnn_multi_hyperparameter_tuning(df, item_to_predict, batch_size
 	HP_FILE = 'data/HP-Tuning-MultiM_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
 
 	with open(HP_FILE, 'a') as the_file:
-		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
+		the_file.write('\nHyperparameter Tuning - {} - {}\n\n'.format(item_to_predict, current_time))
 
 	lowest_loss, lowest_std = 100, 100
 	best_config = "none"
@@ -362,7 +362,7 @@ def multivariate_rnn_single_hyperparameter_tuning(df, item_to_predict, batch_siz
 	HP_FILE = 'data/HP-Tuning-MultiS_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
 
 	with open(HP_FILE, 'a') as the_file:
-		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
+		the_file.write('\nHyperparameter Tuning - {} - {}\n\n'.format(item_to_predict, current_time))
 
 	lowest_loss, lowest_std = 100, 100
 	best_config = "none"
@@ -400,7 +400,7 @@ def univariate_rnn_hyperparameter_tuning(df, item_to_predict, batch_size=[32], b
 	HP_FILE = 'data/HP-Tuning-Uni_{}.txt'.format(current_time.strftime("%m-%d-%Y"))
 
 	with open(HP_FILE, 'a') as the_file:
-		the_file.write('\nHyperparameter Tuning - {}\n\n'.format(current_time))
+		the_file.write('\nHyperparameter Tuning - {} - {}\n\n'.format(item_to_predict, current_time))
 
 	lowest_loss, lowest_std = 100, 100
 	best_config = "none"
@@ -478,8 +478,11 @@ def main():
 	num_lstm_units = [8,16,32,64,128]
 	learning = [0.0001]
 	past_history= [10,30,100,200]
-	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, learning=learning, past_history=past_history, epochs=epochs)
-	multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, learning=learning, past_history=past_history, epochs=epochs)
-	univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=past_history, num_lstm_units=num_lstm_units)
+	multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, \
+		learning=learning, past_history=past_history, epochs=epochs)
+	multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, \
+		learning=learning, past_history=past_history, epochs=epochs)
+	univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=past_history, \
+		num_lstm_units=num_lstm_units)
 if __name__ == "__main__":
 	main()

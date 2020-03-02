@@ -82,7 +82,7 @@ def main():
 	# SELECT ITEMS
 	items_selected = item_selection()
 	# print(items_selected)
-	item_to_predict = 'Chaos_rune'
+	item_to_predict = 'Runite_ore'
 
 	# FEATURE EXTRACTION
 	preprocessed_df = prepare_data(item_to_predict, items_selected)
