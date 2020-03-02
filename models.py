@@ -432,11 +432,11 @@ def univariate_rnn_hyperparameter_tuning(df, item_to_predict, batch_size=[32], b
 		the_file.write("BEST CONFIG: {}, mean: {}, std: {}\n\n".format(best_config, lowest_loss, lowest_std))
 
 def full_hyperparameter_tuning():
-	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Rune_2h_sword', 'Rune_axe',\
-	# 	'Rune_pickaxe', 'Adamant_platebody', 'Amulet_of_power']
-	items_to_predict = ['Old_school_bond']
+	items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Rune_2h_sword', 'Rune_axe',\
+		'Rune_pickaxe', 'Adamant_platebody', 'Amulet_of_power']
+	max_features = 5
 	for item_to_predict in items_to_predict:
-		for num_features in range(1,5):
+		for num_features in range(1,max_features):
 			# SELECT ITEMS
 			items_selected = item_selection()
 
@@ -465,13 +465,6 @@ def full_hyperparameter_tuning():
 			# 		buffer_size=buffer_size, num_dropout_layers=num_dropout_layers)
 			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, batch_size = batch_size, epochs= epochs, \
 			# 	past_history=past_history, num_lstm_units=num_lstm_units, eval_interval=eval_interval)
-
-			# multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, \
-			# 	learning=learning, past_history=past_history, epochs=epochs)
-			# multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, eval_interval=eval_interval, \
-			# 	learning=learning, past_history=past_history, epochs=epochs)
-			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, past_history=past_history, \
-			# 	num_lstm_units=num_lstm_units)
 			
 			multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict)
 			multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict)
