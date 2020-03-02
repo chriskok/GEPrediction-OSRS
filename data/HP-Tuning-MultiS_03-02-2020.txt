@@ -13,3 +13,15 @@ BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_his
 
 Hyperparameter Tuning - item: Runite_ore, features: 2 - 2020-03-02 23:08:29.122720
 
+
+Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-02 23:24:08.166953
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.4635089468955994, std: 0.027086780133856857
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.4635089468955994, std: 0.027086780133856857
+
+
+Hyperparameter Tuning - item: Old_school_bond, features: 2 - 2020-03-02 23:26:46.774463
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5238395076990128, std: 0.05143868521518425
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5238395076990128, std: 0.05143868521518425
+

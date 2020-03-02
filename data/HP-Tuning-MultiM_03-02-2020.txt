@@ -10,3 +10,12 @@ Hyperparameter Tuning - item: Death_rune, features: 2 - 2020-03-02 23:01:20.7468
 config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.37551841616630555, std: 0.06303275339570474
 BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.37551841616630555, std: 0.06303275339570474
 
+
+Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-02 23:24:42.776546
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.45592708006501204, std: 0.010246761477388842
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.45592708006501204, std: 0.010246761477388842
+
+
+Hyperparameter Tuning - item: Old_school_bond, features: 2 - 2020-03-02 23:27:21.689467
+
