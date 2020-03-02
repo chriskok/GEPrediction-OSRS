@@ -1,0 +1,12 @@
+
+Hyperparameter Tuning - item: Runite_ore, features: 2 - 2020-03-02 22:58:38.100318
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.41749243915081025, std: 0.06313347186293118
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.41749243915081025, std: 0.06313347186293118
+
+
+Hyperparameter Tuning - item: Death_rune, features: 2 - 2020-03-02 23:01:20.746809
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.37551841616630555, std: 0.06303275339570474
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.37551841616630555, std: 0.06303275339570474
+
