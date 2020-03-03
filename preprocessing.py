@@ -126,6 +126,8 @@ def prepare_data(item_to_predict, items_selected, verbose=False, DATA_FOLDER = "
 	if verbose: print("dropping: {}".format(df.columns[df.isna().any()].tolist()))
 	df = df.dropna(axis='columns')
 
+	del buy_average, sell_average, buy_quantity, sell_quantity
+
 	return df
 
 # FEATURE SELECTION FUNCTIONS

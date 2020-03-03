@@ -1,0 +1,24 @@
+
+Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-03 15:18:59.634664
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23155213266611097, std: 0.004872201172735468
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23155213266611097, std: 0.004872201172735468
+
+
+Hyperparameter Tuning - item: Old_school_bond, features: 2 - 2020-03-03 15:21:40.749147
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23122955381870267, std: 0.002817162448534449
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23122955381870267, std: 0.002817162448534449
+
+
+Hyperparameter Tuning - item: Old_school_bond, features: 3 - 2020-03-03 15:24:25.003372
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.22408847182989122, std: 0.0029453576898817403
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.22408847182989122, std: 0.0029453576898817403
+
+
+Hyperparameter Tuning - item: Old_school_bond, features: 4 - 2020-03-03 15:27:20.744302
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.2238305363059044, std: 0.0026991377221372375
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.2238305363059044, std: 0.0026991377221372375
+

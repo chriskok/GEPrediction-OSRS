@@ -466,25 +466,33 @@ def full_hyperparameter_tuning():
 			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, batch_size = batch_size, epochs= epochs, \
 			# 	past_history=past_history, num_lstm_units=num_lstm_units, eval_interval=eval_interval)
 			
-			multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict)
-			multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict)
-			univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
+			multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, \
+				num_lstm_units=num_lstm_units, past_history=[15,30])
+			multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, \
+				num_lstm_units=num_lstm_units, past_history=past_history)
+			univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, \
+				past_history=range(5,20,5), num_lstm_units=num_lstm_units)
+			
+			del selected_df
+			del preprocessed_df
+			gc.collect()
+
 
 def main():
-	# =========== PREPROCESSING =========== 
-	# SELECT ITEMS
-	items_selected = item_selection()
-	# print(items_selected)
-	item_to_predict = 'Old_school_bond'
+	# # =========== PREPROCESSING =========== 
+	# # SELECT ITEMS
+	# items_selected = item_selection()
+	# # print(items_selected)
+	# item_to_predict = 'Old_school_bond'
 
-	# FEATURE EXTRACTION
-	preprocessed_df = prepare_data(item_to_predict, items_selected)
+	# # FEATURE EXTRACTION
+	# preprocessed_df = prepare_data(item_to_predict, items_selected)
 
-	# FEATURE SELECTION & NORMALIZATION
-	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=2)
-	print(selected_df.head())
-	# print(selected_df.shape)
-	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
+	# # FEATURE SELECTION & NORMALIZATION
+	# selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=2)
+	# print(selected_df.head())
+	# # print(selected_df.shape)
+	# # print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
 
 	# # =========== UNIVARIATE =========== 
@@ -496,26 +504,26 @@ def main():
 	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
 
 
-	# =========== MULTIVARIATE SINGLE STEP ===========
-	# TRAINING AND SAVING MODEL
-	multivariate_rnn_single(selected_df, item_to_predict)
+	# # =========== MULTIVARIATE SINGLE STEP ===========
+	# # TRAINING AND SAVING MODEL
+	# multivariate_rnn_single(selected_df, item_to_predict)
 
-	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
-	apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
-
-
-	# =========== MULTIVARIATE MULTI STEP ===========
-	# TRAINING AND SAVING MODEL
-	multivariate_rnn_multi(selected_df, item_to_predict)
-
-	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
+	# apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 
-	# # =========== HYPERPARAMETER TUNING ===========
-	# full_hyperparameter_tuning()
+	# # =========== MULTIVARIATE MULTI STEP ===========
+	# # TRAINING AND SAVING MODEL
+	# multivariate_rnn_multi(selected_df, item_to_predict)
+
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+
+
+	# =========== HYPERPARAMETER TUNING ===========
+	full_hyperparameter_tuning()
 		
 if __name__ == "__main__":
 	main()
