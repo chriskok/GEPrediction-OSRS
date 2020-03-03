@@ -1,24 +1,105 @@
 
-Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-03 15:18:59.634664
+Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-03 16:26:32.740252
 
-config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23155213266611097, std: 0.004872201172735468
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23155213266611097, std: 0.004872201172735468
-
-
-Hyperparameter Tuning - item: Old_school_bond, features: 2 - 2020-03-03 15:21:40.749147
-
-config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23122955381870267, std: 0.002817162448534449
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23122955381870267, std: 0.002817162448534449
-
-
-Hyperparameter Tuning - item: Old_school_bond, features: 3 - 2020-03-03 15:24:25.003372
-
-config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.22408847182989122, std: 0.0029453576898817403
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.22408847182989122, std: 0.0029453576898817403
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.2175994280576706, std: 0.00138390356695445
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.22267646658420565, std: 0.0022512414584718006
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.2260611379146576, std: 0.0027520642479546384
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.2240676462650299, std: 0.002006145301420411
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.22108949393033983, std: 0.003224373089386121
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.2168449796438217, std: 0.007387159123271306
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.22376009607315064, std: 0.005959470821665019
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.22478169053792954, std: 0.006149941205006607
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.23025023907423017, std: 0.005617335450633624
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.22502227425575255, std: 0.004506993333876718
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.2168449796438217, std: 0.007387159123271306
 
 
-Hyperparameter Tuning - item: Old_school_bond, features: 4 - 2020-03-03 15:27:20.744302
+Hyperparameter Tuning - item: Rune_platebody, features: 1 - 2020-03-03 16:38:51.204651
 
-config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.2238305363059044, std: 0.0026991377221372375
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.2238305363059044, std: 0.0026991377221372375
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.3174019893407822, std: 0.0009245783871125317
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.2888979540467262, std: 0.0009114268011158961
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.29851144552230835, std: 0.0006099253201148611
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.2987461587786674, std: 0.0004072530207051147
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.2984672603011131, std: 0.00028830828159698345
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.32582588213682173, std: 0.0031623629341260315
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.2991487826108932, std: 0.003548282973839626
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.3199487414956093, std: 0.007841577445288106
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.3081038749217987, std: 0.0014951246505370132
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.3059243255853653, std: 0.002672570892599681
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.2888979540467262, std: 0.0009114268011158961
+
+
+Hyperparameter Tuning - item: Rune_2h_sword, features: 1 - 2020-03-03 16:53:10.033582
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.53773563849926, std: 0.00164655753665813
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.49112878727912906, std: 0.0005407044361142367
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.5158642333745956, std: 0.001158486264317898
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.5092240446805955, std: 0.0018718156817713195
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.5018489623069764, std: 0.0015471245407074302
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.536744673371315, std: 0.0016031213168593986
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.5283940021991729, std: 0.005212627087347648
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.5390106588602066, std: 0.002766788701080829
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.5426956737041473, std: 0.01650037341096449
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.5413855201005935, std: 0.00526720351372853
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.49112878727912906, std: 0.0005407044361142367
+
+
+Hyperparameter Tuning - item: Rune_axe, features: 1 - 2020-03-03 17:07:56.351122
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.5347473462820054, std: 0.0018812251771286913
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.5690114513635636, std: 0.0006638180569699785
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.5042381221055985, std: 0.0008417290778370254
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.5040272402763366, std: 0.0007685219130113096
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.4991167730093003, std: 0.0010902945363281207
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.5404019999504089, std: 0.0034069716733339567
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.5547671679258347, std: 0.008218632161823312
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.5234316647052765, std: 0.003429309181361638
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.5470007145404815, std: 0.019397789584551624
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.5315098583698272, std: 0.007546302628863197
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.4991167730093003, std: 0.0010902945363281207
+
+
+Hyperparameter Tuning - item: Rune_pickaxe, features: 1 - 2020-03-03 17:22:48.062647
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.33523111879825596, std: 0.0009824020262816807
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.3303791238665581, std: 0.0007033393577589917
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.3516525644063949, std: 0.0006303214251392051
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.35478535920381543, std: 0.0007439531188611231
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.3469409555196762, std: 0.0005535030739817153
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.3212315713763237, std: 0.001117371804036455
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.3374162018299103, std: 0.003980856648615249
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.3554095181822777, std: 0.009148428835363615
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.35367902398109435, std: 0.003644999204011445
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.3564217406511307, std: 0.007577373813064367
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.3212315713763237, std: 0.001117371804036455
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 17:38:08.166729
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.21221041283011438, std: 0.0009031463581759867
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.20658689868450164, std: 0.0004708525809618381
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.21115690633654594, std: 0.0012672243988992062
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.20929766282439233, std: 0.0007517332354459567
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19661050930619242, std: 0.002343661196204308
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.20984579077363014, std: 0.001076686739116043
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.21586565589904785, std: 0.005296503696492542
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.21469317860901355, std: 0.0032710831410128435
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.22045127347111704, std: 0.006082486377927987
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.20376915708184243, std: 0.004540751278877604
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19661050930619242, std: 0.002343661196204308
+
+
+Hyperparameter Tuning - item: Amulet_of_power, features: 1 - 2020-03-03 17:54:35.191585
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-10, mean: 0.2475222103595734, std: 0.0011853610051400236
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-15, mean: 0.293888653576374, std: 0.002865649168865507
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.2304007884860039, std: 0.0007265616299305687
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-25, mean: 0.23169957414269446, std: 0.0018530028000887586
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.23443987727165222, std: 0.0016854826789474786
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-10, mean: 0.24676222705841067, std: 0.00405499840161545
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-15, mean: 0.31080651068687437, std: 0.004207863366793281
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-20, mean: 0.26891969949007033, std: 0.0076499587535342525
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.2646456518769264, std: 0.012491752163745196
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.2615371572971344, std: 0.0082977709535056
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.2304007884860039, std: 0.0007265616299305687
 

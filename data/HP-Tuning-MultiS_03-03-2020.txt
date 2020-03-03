@@ -1,24 +1,67 @@
 
-Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-03 15:17:04.649591
+Hyperparameter Tuning - item: Old_school_bond, features: 1 - 2020-03-03 16:19:12.957541
 
-config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.4635089468955994, std: 0.027086780133856857
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.4635089468955994, std: 0.027086780133856857
-
-
-Hyperparameter Tuning - item: Old_school_bond, features: 2 - 2020-03-03 15:19:52.463876
-
-config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5238395076990128, std: 0.05143868521518425
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5238395076990128, std: 0.05143868521518425
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.4805337569117546, std: 0.007895951360692946
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.4185048776865005, std: 0.006070659441641473
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.5361842030286789, std: 0.02684339074354893
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.46078998744487765, std: 0.010810453541788936
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.4185048776865005, std: 0.006070659441641473
 
 
-Hyperparameter Tuning - item: Old_school_bond, features: 3 - 2020-03-03 15:22:34.021787
+Hyperparameter Tuning - item: Rune_platebody, features: 1 - 2020-03-03 16:31:17.666404
 
-config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.48732635468244556, std: 0.016459180155765654
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.48732635468244556, std: 0.016459180155765654
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.3529656106233597, std: 0.0006116571722992795
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.35514907032251364, std: 0.0028493391632059
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.369537889957428, std: 0.0033327881262399045
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3643905910849571, std: 0.009972087875757908
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.3529656106233597, std: 0.0006116571722992795
 
 
-Hyperparameter Tuning - item: Old_school_bond, features: 4 - 2020-03-03 15:25:19.008943
+Hyperparameter Tuning - item: Rune_2h_sword, features: 1 - 2020-03-03 16:44:08.996302
 
-config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5605833798646926, std: 0.007778884803614957
-BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.5605833798646926, std: 0.007778884803614957
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.712072777748108, std: 0.0022794129237267108
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.7192731726169586, std: 0.006745325721478002
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.7400207221508026, std: 0.019898996934439243
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.7160950142145157, std: 0.006257175250779277
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.712072777748108, std: 0.0022794129237267108
 
+
+Hyperparameter Tuning - item: Rune_axe, features: 1 - 2020-03-03 16:58:53.694105
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.6198132574558258, std: 0.0008007948320759403
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.6066145968437195, std: 0.0018611699246140318
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.6219118845462799, std: 0.000631170871835721
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.622456488609314, std: 0.01148886584365132
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.6066145968437195, std: 0.0018611699246140318
+
+
+Hyperparameter Tuning - item: Rune_pickaxe, features: 1 - 2020-03-03 17:13:34.229235
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.46774661242961885, std: 0.0029163816148271918
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.4855619418621063, std: 0.004201487217154963
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.47817077100276945, std: 0.003826177027558526
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.48413613498210906, std: 0.008088829761170995
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.46774661242961885, std: 0.0029163816148271918
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 17:28:51.538316
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.2708896863460541, std: 0.0020668364019487654
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.27590294390916825, std: 0.005031016895339829
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.2687469057738781, std: 0.013925679376025442
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.28544942587614053, std: 0.017440460181639923
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.2687469057738781, std: 0.013925679376025442
+
+
+Hyperparameter Tuning - item: Amulet_of_power, features: 1 - 2020-03-03 17:44:33.298957
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-15, mean: 0.44820257097482685, std: 0.006513754351492488
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.44450344234704975, std: 0.0038015691991106692
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-15, mean: 0.49630824744701385, std: 0.015474192067160764
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.501334927380085, std: 0.031095439120876145
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.44450344234704975, std: 0.0038015691991106692
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 18:48:40.265683
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.2553972715139389, std: 0.004936918041670681
