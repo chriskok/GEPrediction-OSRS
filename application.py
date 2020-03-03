@@ -30,7 +30,7 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	for x, y in val_univariate.take(2):
+	for x, y in val_univariate.take(5):
 		# print(unnormalized(x[0].numpy()))
 		plot = show_plot([unnormalized(x[0].numpy()), unnormalized(y[0].numpy()),
 						unnormalized(model.predict(x)[0])], 0, 'Simple LSTM model - unnormalized')
@@ -77,15 +77,15 @@ def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mea
 
 
 def main():
-	MODEL_TYPE = 'multiM'
+	MODEL_TYPE = 'uni'
 	
 	# SELECT ITEMS
 	items_selected = item_selection()
 	# print(items_selected)
-	item_to_predict = 'Runite_ore'
+	item_to_predict = 'Old_school_bond'
 
 	# FEATURE EXTRACTION
-	preprocessed_df = prepare_data(item_to_predict, items_selected)
+	preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/newest/")
 
 	# FEATURE SELECTION & NORMALIZATION
 	if not os.path.isfile('models/features/{}_{}_features.txt'.format(item_to_predict, MODEL_TYPE)):
@@ -97,13 +97,14 @@ def main():
 	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, \
 		specific_features=specific_feature_list, number_of_features=len(specific_feature_list)-1)
 	print(selected_df.head())
+	print(selected_df.shape)
 
 	# LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	# apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
 	
-	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+	# apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 if __name__ == "__main__":
 	main()

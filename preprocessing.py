@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestRegressor
 
 # DATA_FOLDER = "data/osbuddy/excess/"
-DATA_FOLDER = "data/rsbuddy/"
+# DATA_FOLDER = "data/rsbuddy/"
 rsAPI = "https://storage.googleapis.com/osb-exchange/summary.json"
 
 def save_member_items():
@@ -35,11 +35,11 @@ def save_member_items():
 
 	# print("member items: {}, non-member items: {}".format(len(member_list), len(non_member_list)))
 	
-def item_selection():
-	buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv")
+def item_selection(DATA_FOLDER = "data/rsbuddy/", drop_percentage=0.05):
+	buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv", error_bad_lines=False, warn_bad_lines=False)
 	buy_quantity = buy_quantity.set_index('timestamp')
 	buy_quantity = buy_quantity.drop_duplicates()
-	df = buy_quantity.loc[:, (buy_quantity==0).mean() < .05]  # Drop columns with more than 5% 0s
+	df = buy_quantity.loc[:, (buy_quantity==0).mean() < drop_percentage]  # Drop columns with more than 5% 0s
 
 	# open output file for reading
 	with open('data/member_list.txt', 'r') as filehandle:
@@ -78,8 +78,8 @@ def RSI(group, n=14):
 	rsi=rsi.rename('RSI')
 	return rsi
 
-def prepare_data(item_to_predict, items_selected, verbose=False):
-	buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv")
+def prepare_data(item_to_predict, items_selected, verbose=False, DATA_FOLDER = "data/rsbuddy/"):
+	buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv", error_bad_lines=False, warn_bad_lines=False)
 	buy_average = buy_average.set_index('timestamp')
 	buy_average = buy_average.drop_duplicates()
 	df = buy_average[items_selected].replace(to_replace=0, method='ffill')
@@ -90,19 +90,19 @@ def prepare_data(item_to_predict, items_selected, verbose=False):
 	finance_features = pd.concat([macd, rsi], axis=1)
 
 	## Fetched API features (buy quantity, sell price average)
-	sell_average = pd.read_csv(DATA_FOLDER + "sell_average.csv")
+	sell_average = pd.read_csv(DATA_FOLDER + "sell_average.csv", error_bad_lines=False, warn_bad_lines=False)
 	sell_average = sell_average.set_index('timestamp')
 	sell_average = sell_average.drop_duplicates()
 	sell_average = sell_average[items_selected].replace(to_replace=0, method='ffill')
 	sell_average.columns = [str(col) + '_sa' for col in sell_average.columns]
 
-	buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv")
+	buy_quantity = pd.read_csv(DATA_FOLDER + "buy_quantity.csv", error_bad_lines=False, warn_bad_lines=False)
 	buy_quantity = buy_quantity.set_index('timestamp')
 	buy_quantity = buy_quantity.drop_duplicates()
 	buy_quantity = buy_quantity[items_selected].replace(to_replace=0, method='ffill')
 	buy_quantity.columns = [str(col) + '_bq' for col in buy_quantity.columns]
 
-	sell_quantity = pd.read_csv(DATA_FOLDER + "sell_quantity.csv")
+	sell_quantity = pd.read_csv(DATA_FOLDER + "sell_quantity.csv", error_bad_lines=False, warn_bad_lines=False)
 	sell_quantity = sell_quantity.set_index('timestamp')
 	sell_quantity = sell_quantity.drop_duplicates()
 	sell_quantity = sell_quantity[items_selected].replace(to_replace=0, method='ffill')

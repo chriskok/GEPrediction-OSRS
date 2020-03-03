@@ -471,30 +471,29 @@ def full_hyperparameter_tuning():
 			univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
 
 def main():
-	# # =========== PREPROCESSING =========== 
-	# # SELECT ITEMS
-	# items_selected = item_selection()
-	# # print(items_selected)
-	# item_to_predict = 'Runite_ore'
+	# =========== PREPROCESSING =========== 
+	# SELECT ITEMS
+	items_selected = item_selection()
+	# print(items_selected)
+	item_to_predict = 'Old_school_bond'
 
-	# # FEATURE EXTRACTION
-	# preprocessed_df = prepare_data(item_to_predict, items_selected)
+	# FEATURE EXTRACTION
+	preprocessed_df = prepare_data(item_to_predict, items_selected)
 
-	# # FEATURE SELECTION & NORMALIZATION
-	# selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=2)
-	# # selected_df, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
-	# print(selected_df.head())
-	# # print(selected_df.shape)
-	# # print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
+	# FEATURE SELECTION & NORMALIZATION
+	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=2)
+	print(selected_df.head())
+	# print(selected_df.shape)
+	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
 
-	# # =========== UNIVARIATE =========== 
-	# # TRAINING AND SAVING MODEL
-	# # univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
+	# =========== UNIVARIATE =========== 
+	# TRAINING AND SAVING MODEL
+	univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
 
-	# # LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
+	# LOADING AND APPLYING MODEL
+	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
 
 
 	# # =========== MULTIVARIATE SINGLE STEP ===========
@@ -515,8 +514,8 @@ def main():
 	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 
-	# =========== HYPERPARAMETER TUNING ===========
-	full_hyperparameter_tuning()
+	# # =========== HYPERPARAMETER TUNING ===========
+	# full_hyperparameter_tuning()
 		
 if __name__ == "__main__":
 	main()
