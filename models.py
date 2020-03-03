@@ -487,31 +487,31 @@ def main():
 	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
 
-	# =========== UNIVARIATE =========== 
+	# # =========== UNIVARIATE =========== 
+	# # TRAINING AND SAVING MODEL
+	# univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
+
+	# # LOADING AND APPLYING MODEL
+	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+	# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
+
+
+	# =========== MULTIVARIATE SINGLE STEP ===========
 	# TRAINING AND SAVING MODEL
-	univariate_rnn(selected_df, item_to_predict, past_history=50, EPOCHS=20, lstm_units=32)
+	multivariate_rnn_single(selected_df, item_to_predict)
 
 	# LOADING AND APPLYING MODEL
-	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
+	loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
+	apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 
-	# # =========== MULTIVARIATE SINGLE STEP ===========
-	# # TRAINING AND SAVING MODEL
-	# multivariate_rnn_single(selected_df, item_to_predict)
+	# =========== MULTIVARIATE MULTI STEP ===========
+	# TRAINING AND SAVING MODEL
+	multivariate_rnn_multi(selected_df, item_to_predict)
 
-	# # LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
-	# apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
-
-
-	# # =========== MULTIVARIATE MULTI STEP ===========
-	# # TRAINING AND SAVING MODEL
-	# multivariate_rnn_multi(selected_df, item_to_predict)
-
-	# # LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+	# LOADING AND APPLYING MODEL
+	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+	apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 
 	# # =========== HYPERPARAMETER TUNING ===========
