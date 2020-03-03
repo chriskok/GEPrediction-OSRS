@@ -61,3 +61,42 @@ config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30,
 config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.5238493447303771, std: 0.03572725543432913
 BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.42858196365833284, std: 0.0083616774416609
 
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 19:02:16.546705
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.2710838642716408, std: 0.007983107937010311
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.2610605212450028, std: 0.01078962519861963
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3755401679873466, std: 0.014420274412075872
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.2696886854469776, std: 0.012209430428814096
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.26792844191193577, std: 0.013818934836329205
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.3057850530445576, std: 0.008037238610730576
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.39035293579101565, std: 0.010964265038182338
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.4808262265920639, std: 0.016434252477061432
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.2610605212450028, std: 0.01078962519861963
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 2 - 2020-03-03 19:50:47.090170
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.2923027101159096, std: 0.014902985522955532
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.2564545448124409, std: 0.004326490222806101
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3014755961298943, std: 0.015280136540853926
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.30572625383734703, std: 0.01524850721145781
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.3998582410812378, std: 0.038798432805087824
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.6016295757293701, std: 0.020845657533226376
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3974764958024025, std: 0.04690047156846885
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.41201825922727586, std: 0.02798151310250264
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.2564545448124409, std: 0.004326490222806101
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 3 - 2020-03-03 20:45:13.139461
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.2494867134094238, std: 0.004709237985486039
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.26489045694470403, std: 0.008026221446089036
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.29633846029639244, std: 0.01706599260452474
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.32249212253093723, std: 0.05809126436778576
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.33494123056530956, std: 0.010948126842115158
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-8_learn-0.001_hist-50, mean: 0.394468871474266, std: 0.012289612558441167
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.3202771067619324, std: 0.0071278345782858285
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-50, mean: 0.42794808995723727, std: 0.022428344724297205
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-8_learn-0.001_hist-30, mean: 0.2494867134094238, std: 0.004709237985486039
+

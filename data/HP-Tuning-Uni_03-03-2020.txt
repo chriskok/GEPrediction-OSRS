@@ -103,3 +103,42 @@ config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-25, mean: 0.2646456518
 config: batch-32_buffer-30_epoch-20_eval-100_lstm-64_hist-30, mean: 0.2615371572971344, std: 0.0082977709535056
 BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-20, mean: 0.2304007884860039, std: 0.0007265616299305687
 
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 19:26:00.255047
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.1983102224767208, std: 0.0019309041515369375
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-35, mean: 0.19931151926517487, std: 0.0043599184033766124
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-40, mean: 0.202986571341753, std: 0.005402449661411503
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-45, mean: 0.2017143374681473, std: 0.006083870291763082
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-30, mean: 0.20012729197740559, std: 0.002216542861435592
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-35, mean: 0.19268328621983527, std: 0.0019449281082435411
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-40, mean: 0.20242463022470472, std: 0.003117802003705911
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-45, mean: 0.20523552387952804, std: 0.006370799545898
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-35, mean: 0.19268328621983527, std: 0.0019449281082435411
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 2 - 2020-03-03 20:15:45.353131
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.1956564202904701, std: 0.0005735381183191014
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-35, mean: 0.1999589681625366, std: 0.003145374341628098
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-40, mean: 0.1995031389594078, std: 0.0029723676170657935
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-45, mean: 0.19489125579595568, std: 0.0012786320466087874
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-30, mean: 0.19926392793655395, std: 0.0036884354119422528
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-35, mean: 0.20385701417922975, std: 0.0030489810359509515
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-40, mean: 0.20401644125580787, std: 0.003459713185725514
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-45, mean: 0.20203583613038062, std: 0.006627282817892224
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-45, mean: 0.19489125579595568, std: 0.0012786320466087874
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 3 - 2020-03-03 21:14:22.632617
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.20016845732927324, std: 0.00156916047111294
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-35, mean: 0.20142448499798773, std: 0.004391862778346529
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-40, mean: 0.20059428423643114, std: 0.002200462371783999
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-45, mean: 0.19934898376464844, std: 0.0056619285165532265
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-30, mean: 0.19457299694418909, std: 0.00018111087450887282
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-35, mean: 0.1952633257210255, std: 0.003721147808839357
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-40, mean: 0.20495375007390976, std: 0.008427599239767273
+config: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-45, mean: 0.20294407606124878, std: 0.004008226750954127
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-400_lstm-8_hist-30, mean: 0.19457299694418909, std: 0.00018111087450887282
+
