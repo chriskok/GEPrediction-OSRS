@@ -1,0 +1,1 @@
+["MACD", "Amulet_of_power_sa", "Amulet_of_power"]

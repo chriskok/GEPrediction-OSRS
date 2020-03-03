@@ -1,1 +1,0 @@
-["Big_bones", "Runite_ore_sa", "Runite_ore"]

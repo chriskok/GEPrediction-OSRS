@@ -1,0 +1,18 @@
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 1 - 2020-03-03 22:27:52.552553
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.20000642403960228, std: 0.001975146812184444
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.20000642403960228, std: 0.001975146812184444
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 2 - 2020-03-03 22:28:46.818565
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19599769860506058, std: 0.002193691665660688
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19599769860506058, std: 0.002193691665660688
+
+
+Hyperparameter Tuning - item: Adamant_platebody, features: 3 - 2020-03-03 22:29:43.019824
+
+config: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19567520380020145, std: 0.0018100083466802027
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-100_lstm-8_hist-30, mean: 0.19567520380020145, std: 0.0018100083466802027
+

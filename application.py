@@ -27,7 +27,7 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	
 	# TODO: write predictions to file, and later get matching real price
 
-def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
+def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_mean, past_history=30):
 
 	df_newest_values = df.tail(past_history).values
 	formatted_values = np.array([df_newest_values])
@@ -38,7 +38,7 @@ def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_me
 
 	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
 
-def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30, BATCH_SIZE=32):
+def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30):
 	df_newest_values = df.tail(past_history).values
 	formatted_values = np.array([df_newest_values])
 
@@ -49,36 +49,38 @@ def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mea
 	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
 
 def main():
-	MODEL_TYPE = 'multiS'
+	model_types = ['uni', 'multiS', 'multiM']
+	items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
 	
 	# SELECT ITEMS
 	items_selected = item_selection()
-	# print(items_selected)
-	item_to_predict = 'Old_school_bond'
 
-	# FEATURE EXTRACTION
-	preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/newest/")
+	for item_to_predict in items_to_predict:
+		# FEATURE EXTRACTION
+		preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/newest/")
 
-	# FEATURE SELECTION & NORMALIZATION
-	if not os.path.isfile('models/features/{}_{}_features.txt'.format(item_to_predict, MODEL_TYPE)):
-		print ("Model for {} hasn't been created, please run models.py first.".format(item_to_predict))
-		return
-	specific_feature_list = []
-	with open('models/features/{}_{}_features.txt'.format(item_to_predict, MODEL_TYPE), 'r') as filehandle:
-		specific_feature_list = json.load(filehandle)
-	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, \
-		specific_features=specific_feature_list, number_of_features=len(specific_feature_list)-1)
-	print(selected_df.head())
+		# FEATURE SELECTION & NORMALIZATION
+		if not os.path.isfile('models/features/{}_{}_features.txt'.format(item_to_predict, model_types[0])):
+			print ("Model for {} hasn't been created, please run models.py first.".format(item_to_predict))
+			return
+		specific_feature_list = []
+		with open('models/features/{}_{}_features.txt'.format(item_to_predict, model_types[0]), 'r') as filehandle:
+			specific_feature_list = json.load(filehandle)
+		selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, \
+			specific_features=specific_feature_list, number_of_features=len(specific_feature_list)-1)
 
-	# LOADING AND APPLYING MODEL
-	# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	# apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean, past_history=50)
+		for model_type in model_types:
+			# LOADING AND APPLYING MODEL
+			loaded_model = tf.keras.models.load_model('models/{}_{}_model.h5'.format(item_to_predict, model_type))
 
-	# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
-	# apply_multivariate_single_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
-	
-	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+			if (model_type == 'uni'):
+				apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+			elif (model_type == 'multiS'):
+				apply_multivariate_single_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+			elif (model_type == 'multiM'):
+				apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+			else:
+				print("Unrecognized model type.")
 
 if __name__ == "__main__":
 	main()

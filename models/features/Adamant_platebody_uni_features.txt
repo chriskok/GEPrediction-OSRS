@@ -1,0 +1,1 @@
+["MACD", "Adamant_platebody_sa", "Adamant_platebody"]

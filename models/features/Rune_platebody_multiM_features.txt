@@ -1,0 +1,1 @@
+["MACD", "Nature_rune_sa", "Rune_platebody"]
