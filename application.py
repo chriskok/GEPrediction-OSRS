@@ -24,6 +24,8 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 		return (val*item_std) + item_mean
 
 	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
+	
+	# TODO: write predictions to file, and later get matching real price
 
 def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_mean, past_history=30, BATCH_SIZE=32):
 
