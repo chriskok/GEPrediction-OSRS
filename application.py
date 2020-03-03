@@ -8,10 +8,31 @@ import numpy as np
 import os
 import pandas as pd
 import json
+import csv
+import time
 
 TRAIN_SPLIT = 0
 tf.random.set_seed(13)
 STEP = 1
+
+labels = ['timestamp', 'uni', 'multiS', 'multiM1', 'multiM2', 'multiM3', 'multiM4', 'multiM5']
+def writeToCSV(filename, data, timestamp):
+	with open('data/predictions/{}.csv'.format(filename), mode='w', newline='') as GE_data:
+		GE_writer = csv.writer(GE_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		GE_writer.writerow(labels)  # write field names
+
+		new_array = [timestamp]
+		new_array.extend(data)
+		GE_writer.writerow(new_array)
+
+
+def appendToCSV(filename, data, timestamp):
+	with open('data/predictions/{}.csv'.format(filename), mode='a', newline='') as GE_data:
+		GE_writer = csv.writer(GE_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+		new_array = [timestamp]
+		new_array.extend(data)
+		GE_writer.writerow(new_array)
 
 def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_history=30):
 
@@ -23,9 +44,10 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
+	result = unnormalized(model.predict(formatted_values)[0])
+	# print("PREDICTION: {}".format(result))
 	
-	# TODO: write predictions to file, and later get matching real price
+	return unnormalized(result)
 
 def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_mean, past_history=30):
 
@@ -36,7 +58,10 @@ def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_me
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
+	result = unnormalized(model.predict(formatted_values)[0])
+	# print("PREDICTION: {}".format(result))
+	
+	return unnormalized(result)
 
 def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30):
 	df_newest_values = df.tail(past_history).values
@@ -46,11 +71,19 @@ def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mea
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	print("PREDICTION: {}".format(unnormalized(model.predict(formatted_values)[0])))
+	result = unnormalized(model.predict(formatted_values)[0])
+	# print("PREDICTION: {}".format(result))
+	
+	return unnormalized(result)
 
 def main():
+	# Get the seconds since epoch
+	current_timestamp = int(time.time())
+	print("{} - predicting items".format(current_timestamp))
+
 	model_types = ['uni', 'multiS', 'multiM']
-	items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
+	items_to_predict = ['Adamant_platebody']
+	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
 	
 	# SELECT ITEMS
 	items_selected = item_selection()
@@ -69,18 +102,29 @@ def main():
 		selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, \
 			specific_features=specific_feature_list, number_of_features=len(specific_feature_list)-1)
 
+		predictions = []
 		for model_type in model_types:
 			# LOADING AND APPLYING MODEL
 			loaded_model = tf.keras.models.load_model('models/{}_{}_model.h5'.format(item_to_predict, model_type))
 
 			if (model_type == 'uni'):
-				apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+				result = apply_univariate(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 			elif (model_type == 'multiS'):
-				apply_multivariate_single_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+				result = apply_multivariate_single_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 			elif (model_type == 'multiM'):
-				apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+				result = apply_multivariate_multi_step(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 			else:
 				print("Unrecognized model type.")
+			
+			predictions.extend(result)
+		
+		new_predictions = [int(i) for i in predictions]
+	
+		if os.path.isfile('data/predictions/{}.csv'.format(item_to_predict)):
+			appendToCSV(item_to_predict, new_predictions, current_timestamp)
+		else:
+			writeToCSV(item_to_predict, new_predictions, current_timestamp)
+
 
 if __name__ == "__main__":
 	main()
