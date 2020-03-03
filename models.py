@@ -10,6 +10,7 @@ import os
 import pandas as pd
 import json
 import datetime
+import gc
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
