@@ -7,7 +7,7 @@
     </style>
 </head>
 <body>
-    <h1>Chronic Coders GE Predictions</h1>
+    <h1>Chronic Coder's GE Predictions</h1>
     <div id="graphDiv"></div>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -36,9 +36,14 @@
         var multiSLine = d3.svg.line()
             .x(function(d) { return x(d.Date); })
             .y(function(d) { return y(d.multiS); });
+
         var multiM1Line = d3.svg.line()
             .x(function(d) { return x(d.Date); })
             .y(function(d) { return y(d.multiM1); });
+            
+        var realLine = d3.svg.line()
+            .x(function(d) { return x(d.Date); })
+            .y(function(d) { return y(d.real); });
         
         var svg = d3.select("#graphDiv")
             .append("svg")
@@ -56,13 +61,14 @@
                 d.uni = +d.uni;
                 d.multiS = +d.multiS;
                 d.multiM1 = +d.multiM1;
+                d.real = +d.real;
             });
             // Scale the range of the data
             x.domain(d3.extent(data, function(d) { return d.Date; }));
             y.domain([d3.min(data, function(d) {
-                return Math.min(d.uni, d.multiS, d.multiM1) }),
+                return Math.min(d.uni, d.multiS, d.multiM1, d.real) }),
                 d3.max(data, function(d) {
-                return Math.max(d.uni, d.multiS, d.multiM1) })]);
+                return Math.max(d.uni, d.multiS, d.multiM1, d.real) })]);
 
             // Add the uniLine as a green line
             svg.append("path")
@@ -70,6 +76,13 @@
                 .style("fill", "none")
                 .attr("class", "line")
                 .attr("d", uniLine(data));
+            
+            // Add the uniLine as a green line
+            svg.append("path")
+                .style("stroke", "purple")
+                .style("fill", "none")
+                .attr("class", "line")
+                .attr("d", realLine(data));
 
             // Add the multiSLine as a blue dashed line
             svg.append("path")
@@ -115,6 +128,13 @@
                 .attr("text-anchor", "start")
                 .style("fill", "blue")
                 .text("multiS");
+            // Add the text for the "real" line
+            svg.append("text")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].real)+")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "purple")
+                .text("real");
         };
 
         drawGraph(graphData);
