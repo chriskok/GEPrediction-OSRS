@@ -45,9 +45,8 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 		return (val*item_std) + item_mean
 
 	result = unnormalized(model.predict(formatted_values)[0])
-	# print("PREDICTION: {}".format(result))
 	
-	return unnormalized(result)
+	return result
 
 def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_mean, past_history=30):
 
@@ -59,9 +58,8 @@ def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_me
 		return (val*item_std) + item_mean
 
 	result = unnormalized(model.predict(formatted_values)[0])
-	# print("PREDICTION: {}".format(result))
 	
-	return unnormalized(result)
+	return result
 
 def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mean, future_target=5, past_history=30):
 	df_newest_values = df.tail(past_history).values
@@ -72,9 +70,8 @@ def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mea
 		return (val*item_std) + item_mean
 
 	result = unnormalized(model.predict(formatted_values)[0])
-	# print("PREDICTION: {}".format(result))
 	
-	return unnormalized(result)
+	return result
 
 def main():
 	# Get the seconds since epoch
@@ -82,8 +79,7 @@ def main():
 	print("{} - predicting items".format(current_timestamp))
 
 	model_types = ['uni', 'multiS', 'multiM']
-	items_to_predict = ['Adamant_platebody']
-	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
+	items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
 	
 	# SELECT ITEMS
 	items_selected = item_selection()
@@ -119,6 +115,7 @@ def main():
 			predictions.extend(result)
 		
 		new_predictions = [int(i) for i in predictions]
+		print('item: {}, pred: {}'.format(item_to_predict, new_predictions))
 	
 		if os.path.isfile('data/predictions/{}.csv'.format(item_to_predict)):
 			appendToCSV(item_to_predict, new_predictions, current_timestamp)
