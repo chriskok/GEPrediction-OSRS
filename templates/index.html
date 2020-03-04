@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+    </style>
+</head>
+<body>
+    <h1>Chronic Coders GE Predictions</h1>
+    <div id="graphDiv"></div>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+        var graphData = {{ data.chart_data | safe }}
+        console.log(graphData)
+        
+        var margin = {top: 30, right: 50, bottom: 30, left: 50};
+        var svgWidth = 600;
+        var svgHeight = 270;
+        var graphWidth = svgWidth - margin.left - margin.right;
+        var graphHeight = svgHeight - margin.top - margin.bottom;
+
+        var x = d3.time.scale().range([0, graphWidth]);
+        var y = d3.scale.linear().range([graphHeight, 0]);
+
+        var xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+        var yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+        var uniLine = d3.svg.line()
+            .x(function(d) { return x(d.Date); })
+            .y(function(d) { return y(d.uni); });
+        
+        var multiSLine = d3.svg.line()
+            .x(function(d) { return x(d.Date); })
+            .y(function(d) { return y(d.multiS); });
+        var multiM1Line = d3.svg.line()
+            .x(function(d) { return x(d.Date); })
+            .y(function(d) { return y(d.multiM1); });
+        
+        var svg = d3.select("#graphDiv")
+            .append("svg")
+                .attr("width", svgWidth)
+                .attr("height", svgHeight)
+            .append("g")
+                .attr("transform", 
+                "translate(" + margin.left + "," + margin.top + ")")
+ 
+        function drawGraph(data) {
+            // For each row in the data, parse the date
+            // and use + to make sure data is numerical
+            data.forEach(function(d) {
+                d.Date = new Date(d.timestamp * 1000);
+                d.uni = +d.uni;
+                d.multiS = +d.multiS;
+                d.multiM1 = +d.multiM1;
+            });
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.Date; }));
+            y.domain([d3.min(data, function(d) {
+                return Math.min(d.uni, d.multiS, d.multiM1) }),
+                d3.max(data, function(d) {
+                return Math.max(d.uni, d.multiS, d.multiM1) })]);
+
+            // Add the uniLine as a green line
+            svg.append("path")
+                .style("stroke", "green")
+                .style("fill", "none")
+                .attr("class", "line")
+                .attr("d", uniLine(data));
+
+            // Add the multiSLine as a blue dashed line
+            svg.append("path")
+                .style("stroke", "blue")
+                .style("fill", "none")
+                .style("stroke-dasharray", ("3, 3"))
+                .attr("d", multiSLine(data));
+
+            // Add the multiM1Line as a red dashed line
+            svg.append("path")
+                .style("stroke", "red")
+                .attr("d", multiM1Line(data));
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + graphHeight + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            // Add the text for the "uni" line
+            svg.append("text")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].uni)+")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "green")
+                .text("uni");
+            // Add the text for the "multiM1" line
+            svg.append("text")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].multiM1)+")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "red")
+                .text("multiM1");
+            // Add the text for the "multiS" line
+            svg.append("text")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].multiS)+")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "blue")
+                .text("multiS");
+        };
+
+        drawGraph(graphData);
+    </script>
+</body>
+</html>
