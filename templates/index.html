@@ -6,14 +6,30 @@
     <style>
     </style>
 </head>
+
 <body>
     <h1>Chronic Coder's GE Predictions</h1>
+
+    <label for="items">Choose an item:</label>
+    <select id="items"> </select>
+
     <div id="graphDiv"></div>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
-        var graphData = {{ data.chart_data | safe }}
-        console.log(graphData)
+        var nameList = {{ names | tojson }}
+        console.log(nameList);
+        itemSelect = document.getElementById('items');
+
+        for (var key in nameList) {
+            console.log(key, nameList[key]);
+            itemSelect.options[itemSelect.options.length] = new Option(nameList[key], key);
+        }
+
+        var graphData0 = {{ data.chart0 | safe }}
+        var graphData1 = {{ data.chart1 | safe }}
+        var graphData2 = {{ data.chart2 | safe }}
+        console.log(graphData0);
         
         var margin = {top: 30, right: 50, bottom: 30, left: 50};
         var svgWidth = 600;
@@ -74,14 +90,14 @@
             svg.append("path")
                 .style("stroke", "green")
                 .style("fill", "none")
-                .attr("class", "line")
+                .attr("class", "uniline")
                 .attr("d", uniLine(data));
             
             // Add the uniLine as a green line
             svg.append("path")
                 .style("stroke", "purple")
                 .style("fill", "none")
-                .attr("class", "line")
+                .attr("class", "realline")
                 .attr("d", realLine(data));
 
             // Add the multiSLine as a blue dashed line
@@ -89,11 +105,13 @@
                 .style("stroke", "blue")
                 .style("fill", "none")
                 .style("stroke-dasharray", ("3, 3"))
+                .attr("class", "multisline")
                 .attr("d", multiSLine(data));
 
             // Add the multiM1Line as a red dashed line
             svg.append("path")
                 .style("stroke", "red")
+                .attr("class", "multimline")
                 .attr("d", multiM1Line(data));
 
             // Add the X Axis
@@ -109,35 +127,135 @@
 
             // Add the text for the "uni" line
             svg.append("text")
-                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].uni)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].uni)+")")
                 .attr("dy", ".35em")
                 .attr("text-anchor", "start")
+                .attr("class", "unitext")
                 .style("fill", "green")
                 .text("uni");
             // Add the text for the "multiM1" line
             svg.append("text")
-                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].multiM1)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiM1)+")")
                 .attr("dy", ".35em")
                 .attr("text-anchor", "start")
                 .style("fill", "red")
+                .attr("class", "multiMtext")
                 .text("multiM1");
             // Add the text for the "multiS" line
             svg.append("text")
-                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].multiS)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiS)+")")
                 .attr("dy", ".35em")
                 .attr("text-anchor", "start")
                 .style("fill", "blue")
+                .attr("class", "multiStext")
                 .text("multiS");
             // Add the text for the "real" line
             svg.append("text")
-                .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[graphData.length-1].real)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].real)+")")
                 .attr("dy", ".35em")
                 .attr("text-anchor", "start")
                 .style("fill", "purple")
+                .attr("class", "realtext")
                 .text("real");
         };
 
-        drawGraph(graphData);
+        function updateGraph(data) {
+            // For each row in the data, parse the date
+            // and use + to make sure data is numerical
+            data.forEach(function(d) {
+                d.Date = new Date(d.timestamp * 1000);
+                d.uni = +d.uni;
+                d.multiS = +d.multiS;
+                d.multiM1 = +d.multiM1;
+                d.real = +d.real;
+            });
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.Date; }));
+            y.domain([d3.min(data, function(d) {
+                return Math.min(d.uni, d.multiS, d.multiM1, d.real) }),
+                d3.max(data, function(d) {
+                return Math.max(d.uni, d.multiS, d.multiM1, d.real) })]);
+
+            // Add the uniLine as a green line
+            svg.select(".uniline")
+                .transition()
+                .duration(750)
+                .attr("d", uniLine(data));
+            
+            // Add the uniLine as a green line
+            svg.select(".realline")
+                .transition()
+                .duration(750)
+                .attr("d", realLine(data));
+
+            // Add the multiSLine as a blue dashed line
+            svg.select(".multisline")
+                .transition()
+                .duration(750)
+                .attr("d", multiSLine(data));
+
+            // Add the multiM1Line as a red dashed line
+            svg.select(".multimline")
+                .transition()
+                .duration(750)
+                .attr("d", multiM1Line(data));
+
+            // Add the X Axis
+            svg.select(".x.axis")
+                .transition()
+                .duration(750)
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg.select(".y.axis")
+                .transition()
+                .duration(750)
+                .call(yAxis);
+
+            // Add the text for the "uni" line
+            svg.select(".unitext")
+                .transition()
+                .duration(750)
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].uni)+")")
+            // Add the text for the "multiM1" line
+            svg.select(".multiMtext")
+                .transition()
+                .duration(750)
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiM1)+")")
+            // Add the text for the "multiS" line
+            svg.select(".multiStext")
+                .transition()
+                .duration(750)
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiS)+")")
+            // Add the text for the "real" line
+            svg.select(".realtext")
+                .transition()
+                .duration(750)
+                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].real)+")")
+        };
+
+        // A function that update the chart
+        function update(selectedGroup) {
+            if (selectedGroup == 0){
+                updateGraph(graphData0);
+            } else if (selectedGroup == 1) {
+                updateGraph(graphData1);
+            } else {
+                updateGraph(graphData2);
+            }
+        }
+
+        drawGraph(graphData0);
+        // drawGraph(graphData1);
+        // drawGraph(graphData2);
+
+        // When the button is changed, run the updateChart function
+        d3.select("#items").on("change", function(d) {
+            // recover the option that has been chosen
+            var selectedOption = d3.select(this).property("value")
+            // run the updateChart function with this selected option
+            update(selectedOption)
+        })
     </script>
 </body>
 </html>
