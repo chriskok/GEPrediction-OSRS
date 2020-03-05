@@ -45,8 +45,12 @@ def api_all():
 		with open('data/predictions/{}.csv'.format(name), mode='r') as infile:
 			
 			reader = csv.reader(infile)
-			next(reader)
-			mydict = {rows[0]:rows[1] for rows in reader}
+			header_row = next(reader)
+			print(header_row)
+			last_row = []
+			for row in reader:
+				last_row = row
+			mydict = {name:last_row[idx] for idx, name in enumerate(header_row)}
 	except EnvironmentError:
 		return "File not found. Please specify different name"	
 
