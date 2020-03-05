@@ -95,7 +95,6 @@
             svg.append("path")
                 .style("stroke", "green")
                 .style("fill", "none")
-                .style("stroke-dasharray", ("3, 3"))
                 .attr("class", "uniline")
                 .attr("d", uniLine(data));
             
@@ -110,7 +109,7 @@
             svg.append("path")
                 .style("stroke", "blue")
                 .style("fill", "none")
-                .style("stroke-dasharray", ("3, 3"))
+                .style("stroke-dasharray", ("6, 3"))
                 .attr("class", "multisline")
                 .attr("d", multiSLine(data));
 
