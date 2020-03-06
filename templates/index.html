@@ -47,7 +47,7 @@
         var xAxis = d3.svg.axis().scale(x)
             .orient("bottom").ticks(10);
         var yAxis = d3.svg.axis().scale(y)
-            .orient("left").ticks(10);
+            .orient("left").ticks(12);
 
         var uniLine = d3.svg.line()
             .x(function(d) { return x(d.Date); })

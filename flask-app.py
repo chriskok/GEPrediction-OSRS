@@ -6,8 +6,12 @@ app = Flask(__name__, template_folder='./templates', static_folder='./static')
 
 @app.route('/')
 def index():
-	# items_predicted = ['Old_school_bond']
 	items_predicted = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody']
+	# items_predicted = ["Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', \
+	# 	'Blue_wizard_robe', 'Adamant_axe', 'Adamant_scimitar', 'Zamorak_monk_top', 'Staff_of_water', 'Staff_of_air', \
+	# 		'Adamantite_bar', 'Amulet_of_power', "Green_d'hide_chaps", 'Mithril_platebody', 'Zamorak_monk_bottom', \
+	# 			"Green_d'hide_body", 'Rune_axe', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+	# 				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 	data = {}
 	names = {}
 	count = 0 
@@ -27,7 +31,7 @@ def index():
 		merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
 		chart_data = merged_df.to_dict(orient='records')
 		chart_data = json.dumps(chart_data, indent=2)
-		data['chart{}'.format(count)] = chart_data
+		data['{}'.format(count)] = chart_data
 		names[count] = item_predicted
 		count += 1
 		# print(data)

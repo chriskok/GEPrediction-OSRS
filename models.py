@@ -486,56 +486,57 @@ def full_hyperparameter_tuning():
 
 def main():
 	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
-	# items_to_predict = select_sorted_items(items_to_predict)
-	# num_features = 2
+	items_to_predict = item_selection()
+	items_to_predict = select_sorted_items(items_to_predict)
+	num_features = 3
 
-	# for item_to_predict in items_to_predict:
-	# 	# =========== PREPROCESSING =========== 
-	# 	# SELECT ITEMS
-	# 	items_selected = item_selection()
+	for item_to_predict in items_to_predict:
+		# =========== PREPROCESSING =========== 
+		# SELECT ITEMS
+		items_selected = item_selection()
 
-	# 	# FEATURE EXTRACTION
-	# 	preprocessed_df = prepare_data(item_to_predict, items_selected)
+		# FEATURE EXTRACTION
+		preprocessed_df = prepare_data(item_to_predict, items_selected)
 
-	# 	# FEATURE SELECTION & NORMALIZATION
-	# 	selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=num_features)
-	# 	print(selected_df.head())
-	# 	# print(selected_df.shape)
-	# 	# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
-
-
-	# 	# =========== UNIVARIATE =========== 
-	# 	uni_config = {}
-	# 	# TRAINING AND SAVING MODEL
-	# 	univariate_rnn(selected_df, item_to_predict)
-
-	# 	# LOADING AND APPLYING MODEL
-	# 	loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
-	# 	apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+		# FEATURE SELECTION & NORMALIZATION
+		selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=num_features)
+		# print(selected_df.head())
+		# print(selected_df.shape)
+		# print("columns with nan: {}".format(selected_df.columns[selected_df.isna().any()].tolist()))
 
 
-	# 	# =========== MULTIVARIATE SINGLE STEP ===========
-	# 	multiS_config = {'lstm_units':8, 'EVALUATION_INTERVAL':100, 'EPOCHS':20}
-	# 	# TRAINING AND SAVING MODEL
-	# 	multivariate_rnn_single(selected_df, item_to_predict, **multiS_config)
+		# =========== UNIVARIATE =========== 
+		uni_config = {}
+		# TRAINING AND SAVING MODEL
+		univariate_rnn(selected_df, item_to_predict)
 
-	# 	# LOADING AND APPLYING MODEL
-	# 	loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
-	# 	apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
-
-
-	# 	# =========== MULTIVARIATE MULTI STEP ===========
-	# 	multiM_config = {'lstm_units':8, 'EVALUATION_INTERVAL':100, 'EPOCHS':20}
-	# 	# TRAINING AND SAVING MODEL
-	# 	multivariate_rnn_multi(selected_df, item_to_predict, **multiM_config)
-
-	# 	# LOADING AND APPLYING MODEL
-	# 	loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
-	# 	apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+		# # LOADING AND APPLYING MODEL
+		# loaded_model = tf.keras.models.load_model('models/{}_uni_model.h5'.format(item_to_predict))
+		# apply_univariate_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
 
 
-	# # =========== HYPERPARAMETER TUNING ===========
-	full_hyperparameter_tuning()
+		# =========== MULTIVARIATE SINGLE STEP ===========
+		multiS_config = {'lstm_units':32, 'EVALUATION_INTERVAL':200, 'EPOCHS':20}
+		# TRAINING AND SAVING MODEL
+		multivariate_rnn_single(selected_df, item_to_predict, **multiS_config)
+
+		# # LOADING AND APPLYING MODEL
+		# loaded_model = tf.keras.models.load_model('models/{}_multiS_model.h5'.format(item_to_predict))
+		# apply_multivariate_single_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+
+
+		# =========== MULTIVARIATE MULTI STEP ===========
+		multiM_config = {'lstm_units':64, 'EVALUATION_INTERVAL':400, 'EPOCHS':20}
+		# TRAINING AND SAVING MODEL
+		multivariate_rnn_multi(selected_df, item_to_predict, **multiM_config)
+
+		# # LOADING AND APPLYING MODEL
+		# loaded_model = tf.keras.models.load_model('models/{}_multiM_model.h5'.format(item_to_predict))
+		# apply_multivariate_multi_step_test(selected_df, item_to_predict, loaded_model, pred_std, pred_mean)
+
+
+	# # # =========== HYPERPARAMETER TUNING ===========
+	# full_hyperparameter_tuning()
 		
 if __name__ == "__main__":
 	main()
