@@ -198,27 +198,49 @@ def recursive_feature_elim(input_df, item_to_predict, number_of_features=7):
 def unnormalized(val, std, mean):
 	return (val*std) + mean
 
+def select_sorted_items(items_selected, minimum_price=1000, verbose=False, DATA_FOLDER = "data/rsbuddy/"):
+	
+	buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv", error_bad_lines=False, warn_bad_lines=False)
+	buy_average = buy_average.set_index('timestamp')
+	buy_average = buy_average.drop_duplicates()
+	df = buy_average[items_selected].replace(to_replace=0, method='ffill')
+
+	if (verbose):
+		pd.set_option('display.max_rows', None)
+		print(df.mean().sort_values())
+
+	mean_dict = df.mean().sort_values().to_dict()
+	chosen_items = []
+
+	for key in mean_dict:
+		if (mean_dict[key] > minimum_price):
+			chosen_items.append(key)
+	
+	if (verbose): print(chosen_items)
+	return chosen_items
+
 def main():
 	# SAVE ITEM LISTS
 	# save_member_items()
 
 	# SELECT ITEMS
 	items_selected = item_selection()
-	# print(items_selected)
+	narrowed_items = select_sorted_items(items_selected)
+	print(narrowed_items)
 	item_to_predict = 'Oak_logs'
 	# items_selected = ['Rune_axe', 'Rune_2h_sword', 'Rune_scimitar', 'Rune_chainbody', 'Rune_full_helm', 'Rune_kiteshield']
 
-	# ADD FEATURES
-	preprocessed_df = prepare_data(item_to_predict, items_selected, verbose=True)
-	print(preprocessed_df.head())
-	print(preprocessed_df.shape)
+	# # ADD FEATURES
+	# preprocessed_df = prepare_data(item_to_predict, items_selected, verbose=True)
+	# print(preprocessed_df.head())
+	# print(preprocessed_df.shape)
 
-	# FEATURE SELECTION
-	# selected_data, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
-	selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
-	print(selected_data.head())
-	print(selected_data.shape)
-	# print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
+	# # FEATURE SELECTION
+	# # selected_data, pred_std, pred_mean = recursive_feature_elim(preprocessed_df, item_to_predict)
+	# selected_data, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict)
+	# print(selected_data.head())
+	# print(selected_data.shape)
+	# # print(unnormalized(selected_data[item_to_predict], pred_std, pred_mean))
 
 if __name__ == "__main__":
 	main()

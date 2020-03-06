@@ -1,0 +1,9 @@
+
+Hyperparameter Tuning - item: Red_spiders'_eggs, features: 2 - 2020-03-06 19:14:25.017971
+
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-32_learn-0.001_hist-30, mean: 0.15553688421845435, std: 0.009084393421427223
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.14784514352679254, std: 0.009033986247773032
+config: batch-32_buffer-30_epoch-20_eval-100_drop-2_lstm-128_learn-0.001_hist-30, mean: 0.15435347869992255, std: 0.015128983331714535
+config: batch-32_buffer-30_epoch-20_eval-100_drop-4_lstm-32_learn-0.001_hist-30, mean: 0.22467942863702772, std: 0.005489621104089636
+config: batch-32_buffer-30_epoch-20_eval-100_drop-4_lstm-64_learn-0.001_hist-30, mean: 0.2208213531970978, std: 0.012508447140565688
+config: batch-32_buffer-30_epoch-20_eval-100_drop-4_lstm-128_learn-0.001_hist-30, mean: 0.22763233229517937, std: 0.014314948546111862

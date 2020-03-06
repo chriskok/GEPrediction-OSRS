@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
-from preprocessing import prepare_data, regression_f_test, recursive_feature_elim, item_selection
+from preprocessing import prepare_data, regression_f_test, recursive_feature_elim, item_selection, select_sorted_items
 from sklearn.model_selection import GridSearchCV
 
 import tensorflow as tf
@@ -435,10 +435,12 @@ def univariate_rnn_hyperparameter_tuning(df, item_to_predict, batch_size=[32], b
 def full_hyperparameter_tuning():
 	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Rune_2h_sword', 'Rune_axe',\
 	# 	'Rune_pickaxe', 'Adamant_platebody', 'Amulet_of_power']
-	items_to_predict = ['Adamant_platebody']
+	items_to_predict = item_selection()
+	items_to_predict = select_sorted_items(items_to_predict)
+	min_features = 2
 	max_features = 4
 	for item_to_predict in items_to_predict:
-		for num_features in range(1,max_features):
+		for num_features in range(min_features,max_features):
 			# SELECT ITEMS
 			items_selected = item_selection()
 
@@ -447,7 +449,7 @@ def full_hyperparameter_tuning():
 
 			# FEATURE SELECTION & NORMALIZATION
 			selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, number_of_features=num_features)
-			print(selected_df.head())
+			# print(selected_df.head())
 
 			# define the grid search parameters
 			batch_size = [16, 32, 64, 128]
@@ -455,7 +457,7 @@ def full_hyperparameter_tuning():
 			epochs = [20,40]
 			eval_interval = [100,400]
 			num_dropout_layers = [1,2,3]
-			num_lstm_units = [8,64]
+			num_lstm_units = [32,64,128]
 			learning = [0.0001]
 			past_history= [30,50]
 			
@@ -468,14 +470,14 @@ def full_hyperparameter_tuning():
 			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, batch_size = batch_size, epochs= epochs, \
 			# 	past_history=past_history, num_lstm_units=num_lstm_units, eval_interval=eval_interval)
 			
-			# multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, \
-			# 	num_lstm_units=num_lstm_units, past_history=past_history, eval_interval=eval_interval)
+			multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, \
+				num_lstm_units=num_lstm_units, past_history=[30], eval_interval=eval_interval, num_dropout_layers=[2,4])
 			# multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, \
 			# 	num_lstm_units=num_lstm_units, past_history=past_history, eval_interval=eval_interval)
 			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, \
 			# 	past_history=range(30,50,5), num_lstm_units=[8], eval_interval=eval_interval)
 
-			univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
+			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict)
 			
 			del selected_df
 			del preprocessed_df
@@ -484,6 +486,7 @@ def full_hyperparameter_tuning():
 
 def main():
 	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
+	# items_to_predict = select_sorted_items(items_to_predict)
 	# num_features = 2
 
 	# for item_to_predict in items_to_predict:
