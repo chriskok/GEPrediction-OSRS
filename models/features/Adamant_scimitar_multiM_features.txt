@@ -1,0 +1,1 @@
+["MACD", "Adamant_scimitar_sa", "Adamant_scimitar"]

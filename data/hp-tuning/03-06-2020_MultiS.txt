@@ -11,3 +11,24 @@ config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-32_learn-0.001_hist-30,
 config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-64_learn-0.001_hist-30, mean: 0.1358989730477333, std: 0.002849604901817242
 config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.001_hist-30, mean: 0.1331180723011494, std: 0.0029129815864221966
 config: batch-32_buffer-30_epoch-20_eval-400_drop-4_lstm-32_learn-0.001_hist-30, mean: 0.22265641331672667, std: 0.004273383519215498
+
+Hyperparameter Tuning - item: Red_spiders'_eggs, features: 2 - 2020-03-06 20:57:07.770102
+
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.14249841585755346, std: 0.005914234812280556
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.14249841585755346, std: 0.005914234812280556
+
+
+Hyperparameter Tuning - item: Red_spiders'_eggs, features: 3 - 2020-03-06 21:01:39.386316
+
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.25301655501127246, std: 0.005650245720567323
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.25301655501127246, std: 0.005650245720567323
+
+
+Hyperparameter Tuning - item: Ruby_necklace, features: 2 - 2020-03-06 21:05:46.943867
+
+config: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.2443170581758022, std: 0.0024255460201065633
+BEST CONFIG: batch-32_buffer-30_epoch-20_eval-400_drop-2_lstm-128_learn-0.0001_hist-30, mean: 0.2443170581758022, std: 0.0024255460201065633
+
+
+Hyperparameter Tuning - item: Ruby_necklace, features: 3 - 2020-03-06 21:10:07.284167
+

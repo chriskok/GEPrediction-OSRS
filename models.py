@@ -471,7 +471,7 @@ def full_hyperparameter_tuning():
 			# 	past_history=past_history, num_lstm_units=num_lstm_units, eval_interval=eval_interval)
 			
 			multivariate_rnn_single_hyperparameter_tuning(selected_df, item_to_predict, \
-				num_lstm_units=num_lstm_units, past_history=[30], eval_interval=eval_interval, num_dropout_layers=[2,4])
+				num_lstm_units=[128], past_history=[30], eval_interval=[400], num_dropout_layers=[2], learning = [0.0001])
 			# multivariate_rnn_multi_hyperparameter_tuning(selected_df, item_to_predict, \
 			# 	num_lstm_units=num_lstm_units, past_history=past_history, eval_interval=eval_interval)
 			# univariate_rnn_hyperparameter_tuning(selected_df, item_to_predict, \
@@ -485,10 +485,13 @@ def full_hyperparameter_tuning():
 
 
 def main():
-	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
-	items_to_predict = item_selection()
-	items_to_predict = select_sorted_items(items_to_predict)
-	num_features = 3
+	items_to_predict = ['Staff_of_water', 'Staff_of_air', 'Adamantite_bar', \
+		'Amulet_of_power', "Green_d'hide_chaps", 'Mithril_platebody', 'Zamorak_monk_bottom', \
+				"Green_d'hide_body", 'Rune_axe', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+					'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+	# items_to_predict = item_selection()
+	# items_to_predict = select_sorted_items(items_to_predict)
+	num_features = 2
 
 	for item_to_predict in items_to_predict:
 		# =========== PREPROCESSING =========== 
@@ -516,7 +519,7 @@ def main():
 
 
 		# =========== MULTIVARIATE SINGLE STEP ===========
-		multiS_config = {'lstm_units':32, 'EVALUATION_INTERVAL':200, 'EPOCHS':20}
+		multiS_config = {'lstm_units':64, 'EVALUATION_INTERVAL':300, 'EPOCHS':10, 'learning_rate':0.0001, 'num_dropout': 2}
 		# TRAINING AND SAVING MODEL
 		multivariate_rnn_single(selected_df, item_to_predict, **multiS_config)
 
@@ -526,7 +529,7 @@ def main():
 
 
 		# =========== MULTIVARIATE MULTI STEP ===========
-		multiM_config = {'lstm_units':64, 'EVALUATION_INTERVAL':400, 'EPOCHS':20}
+		multiM_config = {'lstm_units':128, 'EVALUATION_INTERVAL':400, 'EPOCHS':15, 'learning_rate':0.0001, 'num_dropout': 2}
 		# TRAINING AND SAVING MODEL
 		multivariate_rnn_multi(selected_df, item_to_predict, **multiM_config)
 

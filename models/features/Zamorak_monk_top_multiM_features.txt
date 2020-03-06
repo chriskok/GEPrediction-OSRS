@@ -1,0 +1,1 @@
+["MACD", "Zamorak_monk_top_sa", "Zamorak_monk_top"]

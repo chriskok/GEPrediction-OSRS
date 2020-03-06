@@ -1,1 +1,1 @@
-["MACD", "Green_d'hide_vamb_sa", "Raw_chicken_sq", "Green_d'hide_vamb"]
+["MACD", "Green_d'hide_vamb_sa", "Green_d'hide_vamb"]

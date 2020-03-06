@@ -1,1 +1,1 @@
-["Runite_ore", "MACD", "Amulet_of_strength_sa", "Amulet_of_strength"]
+["MACD", "Amulet_of_strength_sa", "Amulet_of_strength"]
