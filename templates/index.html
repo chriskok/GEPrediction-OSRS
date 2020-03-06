@@ -31,10 +31,7 @@
             itemSelect.options[itemSelect.options.length] = new Option(nameList[key], key);
         }
 
-        var allData = {{ data | safe }}
-        var graphData0 = {{ data.0 | safe }}
-        var graphData1 = {{ data.1 | safe }}
-        var graphData2 = {{ data.2 | safe }}
+        var allData = {{ data | tojson }}
 
         console.log(allData);
         
@@ -95,8 +92,6 @@
             new_data.push({'Date': new Date(last_row.timestamp * 1000 + 90*60000), 'multiM1':last_row.multiM4})
             new_data.push({'Date': new Date(last_row.timestamp * 1000 + 120*60000), 'multiM1':last_row.multiM5})
 
-            console.log(new_data);
-
             // Scale the range of the data
             x.domain(d3.extent(new_data, function(d) { return d.Date; }));
             y.domain([d3.min(new_data, function(d) {
@@ -154,7 +149,7 @@
                 .text("uni");
             // Add the text for the "multiM1" line
             svg.append("text")
-                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiM1)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(new_data[new_data.length-1].multiM1)+")")
                 .attr("dy", ".35em")
                 .attr("text-anchor", "start")
                 .style("fill", "red")
@@ -196,8 +191,6 @@
             new_data.push({'Date': new Date(last_row.timestamp * 1000 + 60*60000), 'multiM1':last_row.multiM3})
             new_data.push({'Date': new Date(last_row.timestamp * 1000 + 90*60000), 'multiM1':last_row.multiM4})
             new_data.push({'Date': new Date(last_row.timestamp * 1000 + 120*60000), 'multiM1':last_row.multiM5})
-
-            console.log(new_data);
 
             // Scale the range of the data
             x.domain(d3.extent(new_data, function(d) { return d.Date; }));
@@ -251,7 +244,7 @@
             svg.select(".multiMtext")
                 .transition()
                 .duration(750)
-                .attr("transform", "translate("+(graphWidth+3)+","+y(data[data.length-1].multiM1)+")")
+                .attr("transform", "translate("+(graphWidth+3)+","+y(new_data[new_data.length-1].multiM1)+")")
             // Add the text for the "multiS" line
             svg.select(".multiStext")
                 .transition()
@@ -276,27 +269,19 @@
 
         // A function that update the chart
         function update(selectedGroup) {
-            if (selectedGroup == 0){
-                updateGraph(graphData0);
-                updateInfo(graphData0[graphData0.length-1]);
-            } else if (selectedGroup == 1) {
-                updateGraph(graphData1);
-                updateInfo(graphData1[graphData1.length-1]);
-            } else {
-                updateGraph(graphData2);
-                updateInfo(graphData2[graphData2.length-1]);
-            }
+            updateGraph(allData[selectedGroup]);
+            updateInfo(allData[selectedGroup][allData[selectedGroup].length-1]);
         }
 
-        drawGraph(graphData0);
-        updateInfo(graphData0[graphData0.length-1]);
+        drawGraph(allData[0]);
+        updateInfo(allData[0][allData[0].length-1]);
 
         // When the button is changed, run the updateChart function
         d3.select("#items").on("change", function(d) {
             // recover the option that has been chosen
-            var selectedOption = d3.select(this).property("value")
+            var selectedOption = d3.select(this).property("value");
             // run the updateChart function with this selected option
-            update(selectedOption)
+            update(selectedOption);
         })
     </script>
 </body>
