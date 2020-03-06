@@ -24,6 +24,7 @@ def index():
 		# print(buy_avg.tail(10))
 
 		merged_df = pd.merge_asof(df, buy_avg, left_on='timestamp', right_on='ts', direction='backward')
+		merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
 		chart_data = merged_df.to_dict(orient='records')
 		chart_data = json.dumps(chart_data, indent=2)
 		data['chart{}'.format(count)] = chart_data

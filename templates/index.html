@@ -34,7 +34,6 @@
         var graphData0 = {{ data.chart0 | safe }}
         var graphData1 = {{ data.chart1 | safe }}
         var graphData2 = {{ data.chart2 | safe }}
-        console.log(graphData0);
         
         var margin = {top: 30, right: 50, bottom: 30, left: 100};
         var svgWidth = 600;
@@ -84,11 +83,22 @@
                 d.multiM1 = +d.multiM1;
                 d.real = +d.real;
             });
+
+            var new_data = [...data];
+            var last_row = data[data.length-1]
+            
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 30*60000), 'multiM1':last_row.multiM2})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 60*60000), 'multiM1':last_row.multiM3})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 90*60000), 'multiM1':last_row.multiM4})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 120*60000), 'multiM1':last_row.multiM5})
+
+            console.log(new_data);
+
             // Scale the range of the data
-            x.domain(d3.extent(data, function(d) { return d.Date; }));
-            y.domain([d3.min(data, function(d) {
+            x.domain(d3.extent(new_data, function(d) { return d.Date; }));
+            y.domain([d3.min(new_data, function(d) {
                 return Math.min(d.uni, d.multiS, d.multiM1, d.real) }),
-                d3.max(data, function(d) {
+                d3.max(new_data, function(d) {
                 return Math.max(d.uni, d.multiS, d.multiM1, d.real) })]);
 
             // Add the uniLine as a green line
@@ -118,7 +128,7 @@
                 .style("stroke", "red")
                 .style("stroke-dasharray", ("3, 3"))
                 .attr("class", "multimline")
-                .attr("d", multiM1Line(data));
+                .attr("d", multiM1Line(new_data));
 
             // Add the X Axis
             svg.append("g")
@@ -175,11 +185,22 @@
                 d.multiM1 = +d.multiM1;
                 d.real = +d.real;
             });
+
+            var new_data = [...data];
+            var last_row = data[data.length-1]
+
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 30*60000), 'multiM1':last_row.multiM2})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 60*60000), 'multiM1':last_row.multiM3})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 90*60000), 'multiM1':last_row.multiM4})
+            new_data.push({'Date': new Date(last_row.timestamp * 1000 + 120*60000), 'multiM1':last_row.multiM5})
+
+            console.log(new_data);
+
             // Scale the range of the data
-            x.domain(d3.extent(data, function(d) { return d.Date; }));
-            y.domain([d3.min(data, function(d) {
+            x.domain(d3.extent(new_data, function(d) { return d.Date; }));
+            y.domain([d3.min(new_data, function(d) {
                 return Math.min(d.uni, d.multiS, d.multiM1, d.real) }),
-                d3.max(data, function(d) {
+                d3.max(new_data, function(d) {
                 return Math.max(d.uni, d.multiS, d.multiM1, d.real) })]);
 
             // Add the uniLine as a green line
@@ -204,7 +225,7 @@
             svg.select(".multimline")
                 .transition()
                 .duration(750)
-                .attr("d", multiM1Line(data));
+                .attr("d", multiM1Line(new_data));
 
             // Add the X Axis
             svg.select(".x.axis")
