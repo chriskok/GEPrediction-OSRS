@@ -31,9 +31,12 @@
             itemSelect.options[itemSelect.options.length] = new Option(nameList[key], key);
         }
 
-        var graphData0 = {{ data.chart0 | safe }}
-        var graphData1 = {{ data.chart1 | safe }}
-        var graphData2 = {{ data.chart2 | safe }}
+        var allData = {{ data | safe }}
+        var graphData0 = {{ data.0 | safe }}
+        var graphData1 = {{ data.1 | safe }}
+        var graphData2 = {{ data.2 | safe }}
+
+        console.log(allData);
         
         var margin = {top: 30, right: 50, bottom: 30, left: 100};
         var svgWidth = 600;

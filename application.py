@@ -79,11 +79,11 @@ def main():
 	print("{} - predicting items".format(current_timestamp))
 
 	model_types = ['uni', 'multiS', 'multiM']
-	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', 'Amulet_of_power']
+	items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', "Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength']
 	
 	# SELECT ITEMS
 	items_selected = item_selection()
-	items_to_predict = select_sorted_items(items_selected)
+	# items_to_predict = select_sorted_items(items_selected)
 
 	for item_to_predict in items_to_predict:
 		# FEATURE EXTRACTION
