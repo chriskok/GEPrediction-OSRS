@@ -10,20 +10,73 @@
 <body>
     <h1>Chronic Coder's GE Suggestions</h1>
 
-    <label for="items">Choose an item:</label>
-    <select id="items"> </select>
+    <form id="money_input">
+        <label for="invest">Amount to invest:</label>
+        <input type="text" id="invest" name="invest"><br><br>
+    </form>
 
-    <h3 id="info_text" style="font-weight: bold;">Information about predicted prices (30 minutes forward per time step)</h3>
-    <p id="time_text">Last Prediction Time:</p>
-    <p id="next_time_text">Next Prediction Time:</p>
-    <p id="uni_text">Univariate Model Prediction:</p>
-    <p id="multis_text">Multivariate Single-step Model Prediction:</p>
-    <p id="multim_text">Multivariate Multi-step Model Prediction:</p>
+    <div id="suggest_div"> 
+        <h3 id="suggest_info_text" style="font-weight: bold;">Suggested item</h3>
+        <p id="suggest_text">Don't invest! Either the market is bad or you're poor...</p>
+    </div>
+
+    <div id="text_div"> 
+        <h3 id="info_text" style="font-weight: bold;">Price predictions and profits</h3>
+    </div>
 
     <script>
         var allData = {{ data | tojson }}
 
         console.log(allData);
+
+        var text_div = document.getElementById("text_div")
+
+        for (var key in allData) {          
+            // console.log(key, allData[key]);
+            var current_array = allData[key]
+            
+            var para = document.createElement("p");
+            var t = document.createTextNode(key + ": real = " + current_array[0] + ", pred = " + current_array[1] + ", profit = " + current_array[2]); 
+            para.appendChild(t); 
+            text_div.appendChild(para)
+        }
+
+        function suggest_item(money){
+            var max_profit = 0;
+            var best_item = "";
+            var best_amount = 0;
+            // Go through each item and calculate...
+            for (var key in allData) {          
+                // how many items can be bought...
+                var current_array = allData[key];
+                console.log()
+                var items_bought = Math.floor(money/current_array[0]);  // round down num items
+                
+                // and how much profit can be made.
+                var profit = items_bought * current_array[2];
+
+
+                if (profit > max_profit){
+                    console.log("item: " + key + ", amount: " + items_bought + ", profit: " + profit);
+                    max_profit = profit;
+                    best_item = key;
+                    best_amount = items_bought;
+                }
+            }
+
+            var no_suggestion = "Don't invest! Either the market is bad or you're poor...";
+            
+            if (best_item == ""){
+                document.getElementById('suggest_text').innerHTML = no_suggestion; 
+            } else {
+                document.getElementById('suggest_text').innerHTML = "Invest in <b>" + best_item + "</b>! Get <b>" + best_amount + "</b> and sell later for a profit of <b>" + max_profit + "</b>."; 
+            }
+        }
+
+        var invest_input = document.getElementById("invest");
+        invest_input.onkeyup = function() {
+            suggest_item(invest_input.value);
+        }
     </script>
 </body>
 </html>

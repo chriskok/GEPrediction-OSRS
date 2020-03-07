@@ -78,7 +78,7 @@ def suggest():
 				break
 
 			# Currently save only the value predicted by univariate model
-			data[item_predicted] = [int(closest_real_values[item_predicted]), int(last_row[1])]
+			data[item_predicted] = [int(closest_real_values[item_predicted]), int(last_row[1]), int(last_row[1])-int(closest_real_values[item_predicted])]
 
 	return render_template("suggest.html", data=data)
 
