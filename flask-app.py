@@ -67,6 +67,7 @@ def suggest():
 			temp_last_row = row
 			break
 
+	buy_avg = buy_avg.loc[~buy_avg.index.duplicated(keep='first')]
 	closest_real_values = buy_avg.iloc[buy_avg.index.get_loc(int(temp_last_row[0]), method='nearest')]
 
 	# Get all values predicted
