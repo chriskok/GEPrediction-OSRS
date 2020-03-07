@@ -15,24 +15,27 @@ def index():
 	
 	items_predicted = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
 		'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
-				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+			'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 				
 	data = {}
 	names = {}
 	count = 0 
+	
+	buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')
+	buy_avg = buy_avg.set_index('timestamp')
+	buy_avg = buy_avg.drop_duplicates()
+	buy_avg = buy_avg.reset_index()
+	buy_avg = buy_avg.replace(to_replace=0, method='ffill')
+
 	for item_predicted in items_predicted:
 		df = pd.read_csv('data/predictions/{}.csv'.format(item_predicted))
+		# print(item_predicted)
 		# print(df.tail(10))
 
-		buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')[['timestamp', item_predicted]]
-		buy_avg = buy_avg.set_index('timestamp')
-		buy_avg = buy_avg.drop_duplicates()
-		buy_avg = buy_avg.reset_index()
-		buy_avg = buy_avg.rename(columns={'timestamp': 'ts', item_predicted: 'real'})
-		buy_avg = buy_avg.replace(to_replace=0, method='ffill')
-		# print(buy_avg.tail(10))
+		current_df = buy_avg[['timestamp', item_predicted]]
+		current_df = current_df.rename(columns={'timestamp': 'ts', item_predicted: 'real'})
 
-		merged_df = pd.merge_asof(df, buy_avg, left_on='timestamp', right_on='ts', direction='backward')
+		merged_df = pd.merge_asof(df, current_df, left_on='timestamp', right_on='ts', direction='backward')
 		merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
 		chart_data = merged_df.to_dict(orient='records')
 		data['{}'.format(count)] = chart_data
@@ -48,7 +51,7 @@ def suggest():
 	
 	items_predicted = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
 		'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
-				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+			'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 				
 	data = {}
 	names = {}

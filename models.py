@@ -485,12 +485,11 @@ def full_hyperparameter_tuning():
 
 
 def main():
-	# items_to_predict = ['Staff_of_water', 'Staff_of_air', 'Adamantite_bar', \
-	# 	'Amulet_of_power', "Green_d'hide_chaps", 'Mithril_platebody', 'Zamorak_monk_bottom', \
-	# 			"Green_d'hide_body", 'Rune_axe', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
-	# 				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
-	items_to_predict = item_selection()
-	items_to_predict = select_sorted_items(items_to_predict)
+	# items_to_predict = item_selection()
+	# items_to_predict = select_sorted_items(items_to_predict)
+	items_to_predict = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
+			'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+					'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 	num_features = 2
 
 	for item_to_predict in items_to_predict:
