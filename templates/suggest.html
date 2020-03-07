@@ -16,14 +16,21 @@
     </form>
 
     <div id="suggest_div"> 
-        <h3 id="suggest_info_text" style="font-weight: bold;">Suggested item</h3>
+        <h2 id="suggest_info_text" style="font-weight: bold;">Suggested item</h2>
         <p id="suggest_text">Don't invest! Either the market is bad or you're poor...</p>
-        <p id="other_suggest_text"></p>
     </div>
+
+    <h2 id="other_suggest_info_text" style="font-weight: bold;"></h2>
+    <div id="other_suggest_div">
+    </div>
+
+    <br />
 
     <div id="text_div"> 
         <h3 id="info_text" style="font-weight: bold;">Price predictions and profits</h3>
     </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script>
         var allData = {{ data | tojson }}
@@ -42,11 +49,44 @@
             text_div.appendChild(para)
         }
 
+        function GenerateTable(input_array) {
+     
+            //Create a HTML Table element.
+            var table = document.createElement("TABLE");
+            table.border = "1";
+     
+            //Get the count of columns.
+            var columnCount = input_array[0].length;
+            var header_row = ["Item" , "Amount", "Current Buy Average", "Predicted Buy Average", "Total Profit"]
+     
+            //Add the header row.
+            var row = table.insertRow(-1);
+            for (var i = 0; i < columnCount; i++) {
+                var headerCell = document.createElement("TH");
+                headerCell.innerHTML = header_row[i];
+                row.appendChild(headerCell);
+            }
+     
+            //Add the data rows.
+            for (var i = 1; i < input_array.length; i++) {
+                row = table.insertRow(-1);
+                for (var j = 0; j < columnCount; j++) {
+                    var cell = row.insertCell(-1);
+                    cell.innerHTML = input_array[i][j];
+                }
+            }
+     
+            var dvTable = document.getElementById("other_suggest_div");
+            dvTable.innerHTML = "";
+            dvTable.appendChild(table);
+        }
+        
         function suggest_item(money){
             var max_profit = 0;
             var best_item = "";
             var best_amount = 0;
             var best_item_curr_price = 0;
+            var best_item_pred_price = 0;
             var other_suggestions_dict = {};
 
             // Go through each item and calculate...
@@ -64,34 +104,45 @@
                     best_item = key;
                     best_amount = items_bought;
                     best_item_curr_price = current_array[0];
+                    best_item_pred_price = current_array[1];
                 }
                 
                 if (profit > 0){
-                    other_suggestions_dict[key] = [items_bought, current_array[0], profit]
+                    other_suggestions_dict[key] = [items_bought, current_array[0], current_array[1], profit]
                 }
             }
 
             var no_suggestion = "Don't invest! Either the market is bad or you're poor...";
+            document.getElementById('other_suggest_info_text').innerHTML = "";
             
             if (best_item == ""){
                 document.getElementById('suggest_text').innerHTML = no_suggestion; 
+                var dvTable = document.getElementById("other_suggest_div");
+                dvTable.innerHTML = "";
             } else {
                 document.getElementById('suggest_text').innerHTML = "Invest in <b>" + best_item + "</b>! Get <b>" + best_amount +
-                     "</b> at <b>" + best_item_curr_price + "</b> each (average) and sell later for a profit of <b>" + max_profit + "</b>."; 
+                     "</b> at <b>" + best_item_curr_price + "</b> each (buy average) and sell later at <b>" + best_item_pred_price + "</b> for a profit of <b>" + max_profit + "</b>."; 
                 
                 delete other_suggestions_dict[best_item];
                 //console.log(other_suggestions_dict);
 
                 if (Object.keys(other_suggestions_dict).length !== 0){
-                    document.getElementById('other_suggest_text').innerHTML = "<b>Other suggested items: </b>"
+                    document.getElementById('other_suggest_info_text').innerHTML = "Other suggestions";
+
+                    table_array = [];
+                    // List all other profitable items
+                    for (var other in other_suggestions_dict) { 
+                        current_other_array = [other];
+                        current_other_array.push(...other_suggestions_dict[other])
+                        table_array.push(current_other_array)
+                    }
+
+                    GenerateTable(table_array);
+                } else {
+                    var dvTable = document.getElementById("other_suggest_div");
+                    dvTable.innerHTML = "";
                 }
 
-                // List all other profitable items
-                for (var other in other_suggestions_dict) { 
-                    other_item_array = other_suggestions_dict[other]
-                    document.getElementById('other_suggest_text').innerHTML += "<br />Item: " + other + ", Amount: " + other_item_array[0] +
-                        ", Current Price: " + other_item_array[1] + ", Total Profit: " + other_item_array[2];
-                }
             }
         }
 
