@@ -81,13 +81,14 @@ def main():
 	model_types = ['uni', 'multiS', 'multiM']
 	
 	# SELECT ITEMS
-	items_selected = item_selection()
-	items_to_predict = select_sorted_items(items_selected)
-	# items_to_predict = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', "Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength']
+	items_selected = item_selection(drop_percentage=0.5)
+	items_to_predict = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
+			'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+					'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 
 	for item_to_predict in items_to_predict:
 		# FEATURE EXTRACTION
-		preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/newest/")
+		preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/rsbuddy/")
 
 		# FEATURE SELECTION & NORMALIZATION
 		if not os.path.isfile('models/features/{}_{}_features.txt'.format(item_to_predict, model_types[0])):

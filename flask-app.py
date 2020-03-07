@@ -7,11 +7,16 @@ app = Flask(__name__, template_folder='./templates', static_folder='./static')
 @app.route('/')
 def index():
 	# items_predicted = ['Old_school_bond', 'Rune_platebody', 'Adamant_platebody', "Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength']
-	items_predicted = ["Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', \
-		'Blue_wizard_robe', 'Adamant_axe', 'Adamant_scimitar', 'Zamorak_monk_top', 'Staff_of_water', 'Staff_of_air', \
-			'Adamantite_bar', 'Amulet_of_power', "Green_d'hide_chaps", 'Mithril_platebody', 'Zamorak_monk_bottom', \
-				"Green_d'hide_body", 'Rune_axe', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
-					'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+	# items_predicted = ["Red_spiders'_eggs", 'Ruby_necklace', 'Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', \
+	# 	'Blue_wizard_robe', 'Adamant_axe', 'Adamant_scimitar', 'Zamorak_monk_top', 'Staff_of_water', 'Staff_of_air', \
+	# 		'Adamantite_bar', 'Amulet_of_power', "Green_d'hide_chaps", 'Mithril_platebody', 'Zamorak_monk_bottom', \
+	# 			"Green_d'hide_body", 'Rune_axe', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+	# 				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+	
+	items_predicted = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
+		'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
+				'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
+				
 	data = {}
 	names = {}
 	count = 0 
