@@ -18,6 +18,7 @@
     <div id="suggest_div"> 
         <h3 id="suggest_info_text" style="font-weight: bold;">Suggested item</h3>
         <p id="suggest_text">Don't invest! Either the market is bad or you're poor...</p>
+        <p id="other_suggest_text"></p>
     </div>
 
     <div id="text_div"> 
@@ -45,22 +46,28 @@
             var max_profit = 0;
             var best_item = "";
             var best_amount = 0;
+            var best_item_curr_price = 0;
+            var other_suggestions_dict = {};
+
             // Go through each item and calculate...
             for (var key in allData) {          
                 // how many items can be bought...
                 var current_array = allData[key];
-                console.log()
                 var items_bought = Math.floor(money/current_array[0]);  // round down num items
                 
                 // and how much profit can be made.
                 var profit = items_bought * current_array[2];
 
-
                 if (profit > max_profit){
-                    console.log("item: " + key + ", amount: " + items_bought + ", profit: " + profit);
+                    // console.log("item: " + key + ", amount: " + items_bought + ", profit: " + profit);
                     max_profit = profit;
                     best_item = key;
                     best_amount = items_bought;
+                    best_item_curr_price = current_array[0];
+                }
+                
+                if (profit > 0){
+                    other_suggestions_dict[key] = [items_bought, current_array[0], profit]
                 }
             }
 
@@ -69,7 +76,22 @@
             if (best_item == ""){
                 document.getElementById('suggest_text').innerHTML = no_suggestion; 
             } else {
-                document.getElementById('suggest_text').innerHTML = "Invest in <b>" + best_item + "</b>! Get <b>" + best_amount + "</b> and sell later for a profit of <b>" + max_profit + "</b>."; 
+                document.getElementById('suggest_text').innerHTML = "Invest in <b>" + best_item + "</b>! Get <b>" + best_amount +
+                     "</b> at <b>" + best_item_curr_price + "</b> each (average) and sell later for a profit of <b>" + max_profit + "</b>."; 
+                
+                delete other_suggestions_dict[best_item];
+                //console.log(other_suggestions_dict);
+
+                if (Object.keys(other_suggestions_dict).length !== 0){
+                    document.getElementById('other_suggest_text').innerHTML = "<b>Other suggested items: </b>"
+                }
+
+                // List all other profitable items
+                for (var other in other_suggestions_dict) { 
+                    other_item_array = other_suggestions_dict[other]
+                    document.getElementById('other_suggest_text').innerHTML += "<br />Item: " + other + ", Amount: " + other_item_array[0] +
+                        ", Current Price: " + other_item_array[1] + ", Total Profit: " + other_item_array[2];
+                }
             }
         }
 
