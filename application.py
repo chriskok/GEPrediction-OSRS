@@ -44,7 +44,7 @@ def apply_univariate(df, item_to_predict, model, item_std, item_mean, past_histo
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	result = unnormalized(model.predict(formatted_values)[0])
+	result = unnormalized(model.predict_on_batch(formatted_values)[0])
 	
 	return result
 
@@ -57,7 +57,7 @@ def apply_multivariate_single_step(df, item_to_predict, model, item_std, item_me
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	result = unnormalized(model.predict(formatted_values)[0])
+	result = unnormalized(model.predict_on_batch(formatted_values)[0])
 	
 	return result
 
@@ -69,7 +69,7 @@ def apply_multivariate_multi_step(df, item_to_predict, model, item_std, item_mea
 	def unnormalized(val):
 		return (val*item_std) + item_mean
 
-	result = unnormalized(model.predict(formatted_values)[0])
+	result = unnormalized(model.predict_on_batch(formatted_values)[0])
 	
 	return result
 
@@ -86,20 +86,27 @@ def main():
 			'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
 					'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 
+	preprocessed_df = None
 	for item_to_predict in items_to_predict:
-		# FEATURE EXTRACTION
-		preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/rsbuddy/")
-
-		# FEATURE SELECTION & NORMALIZATION
+		# GET LIST OF FEATURES
 		if not os.path.isfile('models/features/{}_{}_features.txt'.format(item_to_predict, model_types[0])):
 			print ("Model for {} hasn't been created, please run models.py first.".format(item_to_predict))
 			return
 		specific_feature_list = []
 		with open('models/features/{}_{}_features.txt'.format(item_to_predict, model_types[0]), 'r') as filehandle:
 			specific_feature_list = json.load(filehandle)
+
+		t0 = time.time()
+		# FEATURE EXTRACTION
+		preprocessed_df = prepare_data(item_to_predict, items_selected, DATA_FOLDER="data/rsbuddy/", \
+			reused_df=preprocessed_df, specific_features=specific_feature_list)
+
+		t1 = time.time()
+		# FEATURE SELECTION & NORMALIZATION
 		selected_df, pred_std, pred_mean = regression_f_test(preprocessed_df, item_to_predict, \
 			specific_features=specific_feature_list, number_of_features=len(specific_feature_list)-1)
 
+		t2 = time.time()
 		predictions = []
 		for model_type in model_types:
 			# LOADING AND APPLYING MODEL
@@ -115,7 +122,12 @@ def main():
 				print("Unrecognized model type.")
 			
 			predictions.extend(result)
+		tf.keras.backend.clear_session()
 		
+		t3 = time.time()
+
+		print('TIME LOG - preprocessing: {}, feature selection: {}, prediction: {}'.format(t1-t0, t2-t1, t3-t2))
+
 		new_predictions = [int(i) for i in predictions]
 		print('item: {}, pred: {}'.format(item_to_predict, new_predictions))
 	

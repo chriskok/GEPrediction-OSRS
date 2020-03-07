@@ -78,7 +78,38 @@ def RSI(group, n=14):
 	rsi=rsi.rename('RSI')
 	return rsi
 
-def prepare_data(item_to_predict, items_selected, verbose=False, DATA_FOLDER = "data/rsbuddy/"):
+def prepare_data(item_to_predict, items_selected, verbose=False, DATA_FOLDER = "data/rsbuddy/", reused_df=None, specific_features=None):
+	
+	# Computational optimization for application (just need to change MACD, RSI or slope)
+	if specific_features is not None and reused_df is not None: 
+		df = reused_df.copy()
+		if ('MACD' in specific_features or 'RSI' in specific_features or 'slope' in specific_features):
+			if (verbose): print('REPLACING MACD OR RSI!')
+			df = df.drop(['MACD', 'RSI'], axis=1, errors='ignore')
+
+			## Known finance features (MACD, RSI)
+			macd = moving_average_convergence(df[item_to_predict])
+			rsi = RSI(df[item_to_predict], 10)
+			finance_features = pd.concat([macd, rsi], axis=1)
+
+			df = pd.concat([df,finance_features], axis=1)
+		
+		if ('slope' in specific_features):
+			df = df.drop(['slope'], axis=1, errors='ignore')
+			if (verbose): print('REPLACING SLOPE!')
+			## Differentiated signal
+			tmp = df.copy()
+			tmp.index = pd.to_datetime(tmp.index)
+			slope = pd.Series(np.gradient(tmp[item_to_predict]), df.index, name='slope')
+			tmp = pd.concat([tmp, slope], axis=1)
+
+			df = pd.concat([df, slope], axis=1)
+
+		if verbose: print("dropping: {}".format(df.columns[df.isna().any()].tolist()))
+		df = df.dropna(axis='columns')
+	
+		return df
+
 	buy_average = pd.read_csv(DATA_FOLDER + "buy_average.csv", error_bad_lines=False, warn_bad_lines=False)
 	buy_average = buy_average.set_index('timestamp')
 	buy_average = buy_average.drop_duplicates()
