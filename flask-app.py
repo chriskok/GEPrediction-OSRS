@@ -49,6 +49,12 @@ def index():
 @app.route('/suggest')
 def suggest():
 	
+	# Prediction index is the type of prediction we want to compare to
+	# 1 - univariate
+	# 2 - multivar single step
+	# 3 to 7 - multivar multi steps 1 to 5 
+	prediction_index = request.args.get("pred", default=1, type=int)
+
 	items_predicted = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
 		'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
 			'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
@@ -78,8 +84,10 @@ def suggest():
 				last_row = row
 				break
 
-			# Currently save only the value predicted by univariate model
-			data[item_predicted] = [int(closest_real_values[item_predicted]), int(last_row[1]), int(last_row[1])-int(closest_real_values[item_predicted])]
+			# Save the real, predicted and profit values
+			real_val = int(closest_real_values[item_predicted])
+			pred_val = int(last_row[prediction_index])
+			data[item_predicted] = [real_val, pred_val, pred_val-real_val]
 
 	return render_template("suggest.html", data=data)
 

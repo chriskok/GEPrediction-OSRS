@@ -68,7 +68,7 @@
             }
      
             //Add the data rows.
-            for (var i = 1; i < input_array.length; i++) {
+            for (var i = 0; i < input_array.length; i++) {
                 row = table.insertRow(-1);
                 for (var j = 0; j < columnCount; j++) {
                     var cell = row.insertCell(-1);
@@ -107,7 +107,7 @@
                     best_item_pred_price = current_array[1];
                 }
                 
-                if (profit > 0){
+                if (profit >= 0 && items_bought > 0){
                     other_suggestions_dict[key] = [items_bought, current_array[0], current_array[1], profit]
                 }
             }
@@ -124,7 +124,7 @@
                      "</b> at <b>" + best_item_curr_price + "</b> each (buy average) and sell later at <b>" + best_item_pred_price + "</b> for a profit of <b>" + max_profit + "</b>."; 
                 
                 delete other_suggestions_dict[best_item];
-                //console.log(other_suggestions_dict);
+                console.log(other_suggestions_dict);
 
                 if (Object.keys(other_suggestions_dict).length !== 0){
                     document.getElementById('other_suggest_info_text').innerHTML = "Other suggestions";
