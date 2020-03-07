@@ -35,7 +35,7 @@
 
         console.log(allData);
         
-        var margin = {top: 30, right: 50, bottom: 30, left: 100};
+        var margin = {top: 100, right: 50, bottom: 100, left: 100};
         var svgWidth = 600;
         var svgHeight = 270;
         var graphWidth = svgWidth - margin.left - margin.right;
@@ -132,7 +132,13 @@
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + graphHeight + ")")
-                .call(xAxis);
+                .call(xAxis)
+                .selectAll("text")
+                    .attr("y", 0)
+                    .attr("x", 9)
+                    .attr("dy", ".35em")
+                    .attr("transform", "rotate(90)")
+                    .style("text-anchor", "start");
 
             // Add the Y Axis
             svg.append("g")
@@ -227,7 +233,13 @@
             svg.select(".x.axis")
                 .transition()
                 .duration(750)
-                .call(xAxis);
+                .call(xAxis)
+                .selectAll("text")
+                    .attr("y", 0)
+                    .attr("x", 9)
+                    .attr("dy", ".35em")
+                    .attr("transform", "rotate(90)")
+                    .style("text-anchor", "start");
 
             // Add the Y Axis
             svg.select(".y.axis")
