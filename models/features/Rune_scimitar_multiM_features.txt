@@ -1,0 +1,1 @@
+["MACD", "Rune_scimitar_bq", "Rune_scimitar"]

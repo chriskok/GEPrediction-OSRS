@@ -1,0 +1,1 @@
+["Death_rune", "Adamantite_bar_sa", "Adamantite_bar"]
