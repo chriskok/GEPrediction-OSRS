@@ -54,35 +54,31 @@ def suggest():
 			'Rune_full_helm', 'Rune_kiteshield', 'Rune_2h_sword', 'Rune_platelegs', 'Rune_platebody', 'Old_school_bond']
 				
 	data = {}
-	names = {}
-	count = 0 
+	
+	buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')
+	buy_avg = buy_avg.set_index('timestamp')
+	buy_avg = buy_avg.drop_duplicates()
+	buy_avg = buy_avg.replace(to_replace=0, method='ffill')
+
+	# Get latest real price values 
+	temp_last_row = None
+	with open('data/predictions/{}.csv'.format(items_predicted[0]), mode='r') as infile:
+		for row in reversed(list(csv.reader(infile))):
+			temp_last_row = row
+			break
+
+	closest_real_values = buy_avg.iloc[buy_avg.index.get_loc(int(temp_last_row[0]), method='nearest')]
+
+	# Get all values predicted
 	for item_predicted in items_predicted:
-		print(item_predicted)
 		with open('data/predictions/{}.csv'.format(item_predicted), mode='r') as infile:
 			last_row = None
 			for row in reversed(list(csv.reader(infile))):
 				last_row = row
-				print(', '.join(row))
 				break
-			data[item_predicted] = last_row
-		# df = pd.read_csv('data/predictions/{}.csv'.format(item_predicted))
-		# # print(df.tail(10))
 
-		# buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')[['timestamp', item_predicted]]
-		# buy_avg = buy_avg.set_index('timestamp')
-		# buy_avg = buy_avg.drop_duplicates()
-		# buy_avg = buy_avg.reset_index()
-		# buy_avg = buy_avg.rename(columns={'timestamp': 'ts', item_predicted: 'real'})
-		# buy_avg = buy_avg.replace(to_replace=0, method='ffill')
-		# # print(buy_avg.tail(10))
-
-		# merged_df = pd.merge_asof(df, buy_avg, left_on='timestamp', right_on='ts', direction='backward')
-		# merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
-		# chart_data = merged_df.to_dict(orient='records')
-		# data['{}'.format(count)] = chart_data
-		# names[count] = item_predicted
-		# count += 1
-		# # print(data)
+			# Currently save only the value predicted by univariate model
+			data[item_predicted] = [int(closest_real_values[item_predicted]), int(last_row[1])]
 
 	return render_template("suggest.html", data=data)
 
