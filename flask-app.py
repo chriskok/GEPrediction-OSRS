@@ -54,6 +54,7 @@ def suggest():
 	# 2 - multivar single step
 	# 3 to 7 - multivar multi steps 1 to 5 
 	prediction_index = request.args.get("pred", default=1, type=int)
+	if (prediction_index > 7): return "Incorrect prediction index, please enter number between 1 and 7."
 
 	items_predicted = ['Amulet_of_strength', "Green_d'hide_vamb", 'Staff_of_fire', 'Zamorak_monk_top', 'Staff_of_air', \
 		'Adamantite_bar', 'Zamorak_monk_bottom', 'Adamant_platebody', 'Runite_ore', 'Rune_scimitar', 'Rune_pickaxe', \
@@ -88,8 +89,13 @@ def suggest():
 			real_val = int(closest_real_values[item_predicted])
 			pred_val = int(last_row[prediction_index])
 			data[item_predicted] = [real_val, pred_val, pred_val-real_val]
+	
+	model_used = ""
+	if (prediction_index == 1): model_used = "univariate"
+	elif (prediction_index == 2): model_used = "multivariate single step"
+	elif (prediction_index > 2): model_used = "multivariate multi step - {} steps forward".format(prediction_index - 2)
 
-	return render_template("suggest.html", data=data)
+	return render_template("suggest.html", data=data, title=model_used)
 
 # A route to return all of the available entries in our catalog.
 @app.route('/api', methods=['GET'])

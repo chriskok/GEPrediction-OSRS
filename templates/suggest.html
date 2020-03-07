@@ -10,6 +10,10 @@
 <body>
     <h1>Chronic Coder's GE Suggestions</h1>
 
+    <div id="model_info">
+        <p id="model_info_text">Model used: {{ title | tojson }}</p>
+    </div>
+
     <form id="money_input">
         <label for="invest">Amount to invest:</label>
         <input type="text" id="invest" name="invest"><br><br>
@@ -124,7 +128,7 @@
                      "</b> at <b>" + best_item_curr_price + "</b> each (buy average) and sell later at <b>" + best_item_pred_price + "</b> for a profit of <b>" + max_profit + "</b>."; 
                 
                 delete other_suggestions_dict[best_item];
-                console.log(other_suggestions_dict);
+                // console.log(other_suggestions_dict);
 
                 if (Object.keys(other_suggestions_dict).length !== 0){
                     document.getElementById('other_suggest_info_text').innerHTML = "Other suggestions";
