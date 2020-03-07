@@ -57,26 +57,34 @@ def suggest():
 	names = {}
 	count = 0 
 	for item_predicted in items_predicted:
-		df = pd.read_csv('data/predictions/{}.csv'.format(item_predicted))
-		# print(df.tail(10))
+		print(item_predicted)
+		with open('data/predictions/{}.csv'.format(item_predicted), mode='r') as infile:
+			last_row = None
+			for row in reversed(list(csv.reader(infile))):
+				last_row = row
+				print(', '.join(row))
+				break
+			data[item_predicted] = last_row
+		# df = pd.read_csv('data/predictions/{}.csv'.format(item_predicted))
+		# # print(df.tail(10))
 
-		buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')[['timestamp', item_predicted]]
-		buy_avg = buy_avg.set_index('timestamp')
-		buy_avg = buy_avg.drop_duplicates()
-		buy_avg = buy_avg.reset_index()
-		buy_avg = buy_avg.rename(columns={'timestamp': 'ts', item_predicted: 'real'})
-		buy_avg = buy_avg.replace(to_replace=0, method='ffill')
-		# print(buy_avg.tail(10))
+		# buy_avg = pd.read_csv('data/rsbuddy/buy_average.csv')[['timestamp', item_predicted]]
+		# buy_avg = buy_avg.set_index('timestamp')
+		# buy_avg = buy_avg.drop_duplicates()
+		# buy_avg = buy_avg.reset_index()
+		# buy_avg = buy_avg.rename(columns={'timestamp': 'ts', item_predicted: 'real'})
+		# buy_avg = buy_avg.replace(to_replace=0, method='ffill')
+		# # print(buy_avg.tail(10))
 
-		merged_df = pd.merge_asof(df, buy_avg, left_on='timestamp', right_on='ts', direction='backward')
-		merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
-		chart_data = merged_df.to_dict(orient='records')
-		data['{}'.format(count)] = chart_data
-		names[count] = item_predicted
-		count += 1
-		# print(data)
+		# merged_df = pd.merge_asof(df, buy_avg, left_on='timestamp', right_on='ts', direction='backward')
+		# merged_df = merged_df.tail(48)  # Only show the last 48 time steps (24 hours worth of data)
+		# chart_data = merged_df.to_dict(orient='records')
+		# data['{}'.format(count)] = chart_data
+		# names[count] = item_predicted
+		# count += 1
+		# # print(data)
 
-	return render_template("index.html", data=data, names=names)
+	return render_template("suggest.html", data=data)
 
 # A route to return all of the available entries in our catalog.
 @app.route('/api', methods=['GET'])

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+    </style>
+</head>
+
+<body>
+    <h1>Chronic Coder's GE Suggestions</h1>
+
+    <label for="items">Choose an item:</label>
+    <select id="items"> </select>
+
+    <h3 id="info_text" style="font-weight: bold;">Information about predicted prices (30 minutes forward per time step)</h3>
+    <p id="time_text">Last Prediction Time:</p>
+    <p id="next_time_text">Next Prediction Time:</p>
+    <p id="uni_text">Univariate Model Prediction:</p>
+    <p id="multis_text">Multivariate Single-step Model Prediction:</p>
+    <p id="multim_text">Multivariate Multi-step Model Prediction:</p>
+
+    <script>
+        var allData = {{ data | tojson }}
+
+        console.log(allData);
+    </script>
+</body>
+</html>
