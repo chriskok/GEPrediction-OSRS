@@ -23,7 +23,9 @@ The journey so far has been documented in a series of Youtube videos found here:
   - numpy
   - pandas
   - flask
-  
+
+## Usage
+
 ### Creating you own models
 1. Change the items_to_predict array in the main() function to the items you wish to use.
 2. Then, run:
@@ -70,10 +72,12 @@ python rsbuddy-ge-scraper.py
 ```
 You can do this automatically by using [crontab](http://man7.org/linux/man-pages/man5/crontab.5.html) if you're on a Linux machine or [windows scheduler](https://www.windowscentral.com/how-create-automated-task-using-task-scheduler-windows-10) if you're on a Windows machine. 
 
+## Credits
+
 ### Contributions
 
 * Please email me at billnyetheai@gmail.com or message me on discord at ChronicCoder#1667
 
-### Credits
+### Community
 
-* Our amazing discord community: https://discord.gg/ZummSXK
+* Our amazing discord server: https://discord.gg/ZummSXK
